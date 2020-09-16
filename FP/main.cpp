@@ -1,13 +1,11 @@
 /*
-Game written by Can Caglar (Jan Charler) 14th Sept 2020.
+Game written by Can Caglar 14th Sept 2020.
 */
 
 #include "Game.h"
 
-
 int main(int argc, char* argv[])
 {
-	Game game;
-	
+	Game game;	
 	return game.execute();
 }
