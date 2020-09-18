@@ -19,11 +19,15 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CollisionDetection.cpp" />
     <ClCompile Include="Game.cpp" />
+    <ClCompile Include="GameObjects.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CollisionDetection.h" />
     <ClInclude Include="Game.h" />
+    <ClInclude Include="GameObjects.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

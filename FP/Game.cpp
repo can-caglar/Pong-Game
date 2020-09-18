@@ -3,19 +3,14 @@
 using std::cout;
 using std::endl;
 
-enum class Textures {
-	ball = 0,
-	total_textures,
-};
 
 Game::Game() {
 	cout << "Game object initialized." << endl;
 
-	_textures = std::vector<SDL_Texture*>(static_cast<int>(Textures::total_textures));
+	_ball = std::make_unique<Ball>(_gameWidth / 2, _gameHeight / 2, 32);
+	_leftPlatform = std::make_unique<Platform>(200, 200, 32, 32);
+	_rightPlatform = std::make_unique<Platform>(400, 200, 32, 32);
 	_running = true;
-
-	_testX = _gameWidth / 2 - 32;
-	_testY = _gameHeight / 2 - 32;
 }
 
 int Game::execute() {
@@ -80,7 +75,10 @@ bool Game::init() {
 
 bool Game::loadMedia() {
 	
-	_textures[0] = loadTexture("Resources/ball.bmp");
+	_ball->setTexture(loadTexture("Resources/ball.bmp"));
+	_leftPlatform->setTexture(loadTexture("Resources/plank.bmp"));
+	_rightPlatform->setTexture(loadTexture("Resources/plank2.bmp"));
+
 	return true;
 }
 
@@ -109,20 +107,16 @@ void Game::onEvents(SDL_Event* event) {
 		switch (event->key.keysym.sym)
 		{
 		case SDLK_UP:
-			_currentTexture = _textures[0];
-			_testY = (_testY - 10) % _gameHeight;
+			_leftPlatform->moveUp();
 			break;
 		case SDLK_DOWN:
-			_currentTexture = _textures[0];
-			_testY = (_testY + 10) % _gameHeight;
+			_leftPlatform->moveDown();
 			break;
 		case SDLK_LEFT:
-			_currentTexture = _textures[0];
-			_testX = (_testX - 10) % _gameWidth;
+
 			break;
 		case SDLK_RIGHT:
-			_currentTexture = _textures[0];
-			_testX = (_testX + 10) % _gameWidth;
+
 			break;
 		default:
 			break;
@@ -132,32 +126,52 @@ void Game::onEvents(SDL_Event* event) {
 
 void Game::gameLoop() {
 
-	SDL_Delay(1);
+	_leftPlatform->move();
+	if (_leftPlatform->curX() < 0) {
+		_leftPlatform->curX(0);
+		_leftPlatform->stop();
+	}
+	if (_leftPlatform->curX() > _gameWidth) {
+		_leftPlatform->curX(_gameWidth);
+		_leftPlatform->stop();
+	}
+	if (_leftPlatform->curY() < 0) {
+		_leftPlatform->curY(0);
+		_leftPlatform->stop();
+	}
+	if (_leftPlatform->curY() > _gameHeight) {
+		_leftPlatform->curY(_gameHeight);
+		_leftPlatform->stop();
+	}
+
+	_rightPlatform->move();
+	_ball->move();
+	
 }
 
 void Game::render() {
-	SDL_SetRenderDrawColor(_renderer, 0xFF, 0xFF, 0XFF, 0XFF);
-	SDL_RenderClear(_renderer);
 
-	//SDL_Rect viewPort{ 0,0, screen_width / 2, screen_height / 2 };
-	//SDL_RenderSetViewport(_renderer, &viewPort);
 	
-	_currentTexture = _textures[0];
-	SDL_Rect newPos = { _testX, _testY, 32, 32 };
-	SDL_RenderCopy(_renderer, _currentTexture, NULL, &newPos);
-	//SDL_SetRenderFillRect(renderer, rect)
+	_leftPlatform->render(_renderer);
+	_ball->render(_renderer);
 
-	// SDL_GetTicks(); //returns time in ms since sdl init. SDL_Delay() // DELAYS
+	SDL_SetRenderDrawColor(_renderer, 0x00, 0x00, 0x00, 0x00);
+	//SDL_RenderClear(_renderer);
+
+	////SDL_Rect viewPort{ 0,0, screen_width / 2, screen_height / 2 };
+	////SDL_RenderSetViewport(_renderer, &viewPort);
+	//
+	//_currentTexture = _textures[0];
+	//SDL_Rect newPos = { _testX, _testY, 32, 32 };
+	//SDL_RenderCopy(_renderer, _currentTexture, NULL, &newPos);
+	////SDL_SetRenderFillRect(renderer, rect)
+
+	//// SDL_GetTicks(); //returns time in ms since sdl init. SDL_Delay() // DELAYS
 	SDL_RenderPresent(_renderer);
 }
 
 void Game::cleanUp() {
 	cout << "End. Cleaning up..." << endl;
-
-	for (auto t : _textures) {
-		SDL_DestroyTexture(t);
-		t = NULL;
-	}
 
 	SDL_DestroyRenderer(_renderer);
 	SDL_DestroyWindow(_mainWindow);

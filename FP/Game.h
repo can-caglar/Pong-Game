@@ -5,21 +5,24 @@
 #include <vector>
 #include <string>
 
+#include "GameObjects.h"
+
 class Game{
+
 private:
 	bool _running;
-	std::vector<SDL_Texture*> _textures;
-	SDL_Window* _mainWindow;
-	SDL_Texture* _currentTexture;
-	SDL_Renderer* _renderer;
+	//std::vector<GameObjects>  //std::vector<SDL_Texture*> _textures;
 
+	std::unique_ptr<Ball> _ball;
+	std::unique_ptr<Platform> _leftPlatform;
+	std::unique_ptr<Platform> _rightPlatform;
+
+	SDL_Window* _mainWindow;
+	SDL_Renderer* _renderer;
 	SDL_Surface* _surface;
 
 	const int _gameWidth = 600;
 	const int _gameHeight = 400;
-
-	int _testX = 0;
-	int _testY = 0;
 
 	SDL_Texture* loadTexture(std::string path);
 	bool loadMedia();
