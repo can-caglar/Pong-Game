@@ -1,4 +1,5 @@
 #include "Game.h"
+#include "CollisionDetection.h"
 
 using std::cout;
 using std::endl;
@@ -7,10 +8,11 @@ using std::endl;
 Game::Game() {
 	cout << "Game object initialized." << endl;
 
-	_ball = std::make_unique<Ball>(_gameWidth / 2, _gameHeight / 2, 32);
-	_leftPlatform = std::make_unique<Platform>(200, 200, 32, 32);
-	_rightPlatform = std::make_unique<Platform>(400, 200, 32, 32);
+	_ball = std::make_unique<Ball>(_gameWidth / 2, _gameHeight / 2, 7.5f);
+	_leftPlatform = std::make_unique<Platform>(20, 150, 13, 73);
+	_rightPlatform = std::make_unique<Platform>(580, 150, 13, 73);
 	_running = true;
+	_frames = 0;
 }
 
 int Game::execute() {
@@ -75,9 +77,11 @@ bool Game::init() {
 
 bool Game::loadMedia() {
 	
-	_ball->setTexture(loadTexture("Resources/ball.bmp"));
+	_ball->setTexture(loadTexture("Resources/ball.png"));
 	_leftPlatform->setTexture(loadTexture("Resources/plank.bmp"));
 	_rightPlatform->setTexture(loadTexture("Resources/plank2.bmp"));
+
+	
 
 	return true;
 }
@@ -107,16 +111,35 @@ void Game::onEvents(SDL_Event* event) {
 		switch (event->key.keysym.sym)
 		{
 		case SDLK_UP:
-			_leftPlatform->moveUp();
+			_rightPlatform->moveUp();
 			break;
 		case SDLK_DOWN:
+			_rightPlatform->moveDown();
+			break;
+		case SDLK_w:
+			_leftPlatform->moveUp();
+			break;
+		case SDLK_s:
 			_leftPlatform->moveDown();
 			break;
-		case SDLK_LEFT:
-
+		default:
 			break;
-		case SDLK_RIGHT:
-
+		}
+	}
+	else if (event->type == SDL_KEYUP) {
+		switch (event->key.keysym.sym)
+		{
+		case SDLK_UP:
+			_rightPlatform->stop();
+			break;
+		case SDLK_DOWN:
+			_rightPlatform->stop();
+			break;
+		case SDLK_w:
+			_leftPlatform->stop();
+			break;
+		case SDLK_s:
+			_leftPlatform->stop();
 			break;
 		default:
 			break;
@@ -124,35 +147,95 @@ void Game::onEvents(SDL_Event* event) {
 	}
 }
 
-void Game::gameLoop() {
+void Game::checkCollisions() {
 
-	_leftPlatform->move();
-	if (_leftPlatform->curX() < 0) {
-		_leftPlatform->curX(0);
-		_leftPlatform->stop();
-	}
-	if (_leftPlatform->curX() > _gameWidth) {
-		_leftPlatform->curX(_gameWidth);
-		_leftPlatform->stop();
-	}
+	// Left platform
 	if (_leftPlatform->curY() < 0) {
 		_leftPlatform->curY(0);
 		_leftPlatform->stop();
 	}
-	if (_leftPlatform->curY() > _gameHeight) {
-		_leftPlatform->curY(_gameHeight);
+	if ((_leftPlatform->curY() + _leftPlatform->boundingBox().h) > (_gameHeight)) {
+		_leftPlatform->curY(_gameHeight - _leftPlatform->boundingBox().h);
 		_leftPlatform->stop();
 	}
 
+	// Right platform
+	if (_rightPlatform->curY() < 0) {
+		_rightPlatform->curY(0);
+		_rightPlatform->stop();
+	}
+
+	if ((_rightPlatform->curY() + _rightPlatform->boundingBox().h) > (_gameHeight)) {
+		_rightPlatform->curY(_gameHeight - _rightPlatform->boundingBox().h);
+		_rightPlatform->stop();
+	}
+
+	// Ball
+	float ballDiameter = 2 * _ball->boundingBox().r;
+	if (_ball->curX() < 0) {
+		// PLAYER 2 WINS
+		_ball->setVelocity({ 0, 0 });
+	}
+	if (_ball->curX() > _gameWidth - ballDiameter) {
+		// PLAYER 1 WINS
+		_ball->setVelocity({ 0, 0 });
+	}
+	if (_ball->curY() < 0) {
+		float yVel = _ball->velocity().y;
+		float xVel = _ball->velocity().x;
+		float curY = _ball->curY();
+
+		_ball->setVelocity({ xVel, -yVel });
+		_ball->curY(0);
+	}
+	if (_ball->curY() > _gameHeight - ballDiameter) {
+
+		float yVel = _ball->velocity().y;
+		float xVel = _ball->velocity().x;
+		float curY = _ball->curY();
+
+		_ball->setVelocity({ xVel, -yVel });
+		_ball->curY(_gameHeight - ballDiameter);
+	}
+
+	if (CollisionDetection::detectCollision(_ball->boundingBox(), _leftPlatform->boundingBox())) {
+		float yVel = _ball->velocity().y;
+		float xVel = _ball->velocity().x;
+		float curY = _ball->curY();
+
+		_ball->setVelocity({ -xVel, yVel });
+		//_ball->curY(_gameHeight - ballDiameter);
+	}
+	else if (CollisionDetection::detectCollision(_ball->boundingBox(), _rightPlatform->boundingBox())) {
+		float yVel = _ball->velocity().y;
+		float xVel = _ball->velocity().x;
+		float curY = _ball->curY();
+
+		_ball->setVelocity({ -xVel, yVel });
+		//_ball->curY(_gameHeight - ballDiameter);
+	}
+}
+void Game::gameLoop() {
+
+	auto ticks1 = SDL_GetTicks();
+	int frames_now = _frames;
+
+	_leftPlatform->move();
 	_rightPlatform->move();
 	_ball->move();
-	
+
+	checkCollisions();
+
+	auto time_passed = (SDL_GetTicks() - ticks1);
+	SDL_Delay(10);
 }
 
 void Game::render() {
 
+	SDL_RenderClear(_renderer);
 	
 	_leftPlatform->render(_renderer);
+	_rightPlatform->render(_renderer);
 	_ball->render(_renderer);
 
 	SDL_SetRenderDrawColor(_renderer, 0x00, 0x00, 0x00, 0x00);
@@ -168,6 +251,7 @@ void Game::render() {
 
 	//// SDL_GetTicks(); //returns time in ms since sdl init. SDL_Delay() // DELAYS
 	SDL_RenderPresent(_renderer);
+	_frames++;
 }
 
 void Game::cleanUp() {

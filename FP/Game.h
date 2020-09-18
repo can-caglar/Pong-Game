@@ -11,6 +11,7 @@ class Game{
 
 private:
 	bool _running;
+	int _frames;
 	//std::vector<GameObjects>  //std::vector<SDL_Texture*> _textures;
 
 	std::unique_ptr<Ball> _ball;
@@ -26,6 +27,8 @@ private:
 
 	SDL_Texture* loadTexture(std::string path);
 	bool loadMedia();
+
+	void checkCollisions();
 	
 public:
 	Game();

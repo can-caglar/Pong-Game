@@ -36,11 +36,11 @@ public:
 	float curX() { return _curX; }
 	float curY() { return _curY; }
 	T boundingBox() { return _boundingBox;  }
+	SDL_Texture* getTexture() { return _texture;  }
 
 	// Modifiers
 	void setTexture(SDL_Texture* t) { _texture = t; }
 	void setVelocity(Velocity v) { _velocity = v;  }
-
 	void curX(float n); 
 	void curY(float n); 
 	
@@ -48,14 +48,13 @@ public:
 	virtual void render(SDL_Renderer* renderer) = 0;
 	void move();
 	void updateBoundingBox();
-	
 };
 
 class Ball : public GameObjects<Circle> {
 
 private:
 	std::mt19937 _mt;
-	std::random_device rdevice;
+	std::random_device _rdevice;
 public:
 
 	Ball() = default;
