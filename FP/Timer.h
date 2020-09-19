@@ -17,11 +17,11 @@ private:
 
 	bool _isRunning;
 	bool _completed;
+	//std::chrono::milliseconds time_remaining;
+
 	void delay(const std::chrono::milliseconds& ms) {
 		std::unique_lock<std::mutex> lck(mtx);
 		_completed = false;
-
-		std::cout << "Hello from thread " << std::this_thread::get_id() << std::endl;
 
 		_isRunning = true;
 
@@ -48,7 +48,15 @@ public:
 		return _completed;
 	}
 
-	void start(const std::chrono::milliseconds& ms) {
-		_ftr = std::async(&Timer::delay, this, ms);
+	// @brief: Starts a timer in a separate thread. Read from isCompleted() to check if timer successfully stopped running.
+	// @return: True if timer successfully started. False if time is already running.
+	bool start(const std::chrono::milliseconds& ms) {
+		if (isRunning()) {
+			return false;
+		}
+		else {
+			_ftr = std::async(&Timer::delay, this, ms);
+			return true;
+		}
 	}
 };

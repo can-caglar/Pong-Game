@@ -8,6 +8,8 @@
 #include <chrono>
 #include <mutex>
 #include <future>
+#include <sstream>
+#include <iomanip>
 
 #include "GameObjects.h"
 #include "CollisionDetection.h"
@@ -29,7 +31,7 @@ private:
 
 	Timer _threadSafeTimer;
 
-	std::vector<int> scores;
+	std::vector<int> _scoresVector;
 
 	std::unique_ptr<Ball> _ball;
 	std::unique_ptr<Platform> _leftPlatform;
@@ -44,9 +46,15 @@ private:
 	const int GAME_HEIGHT = 400;
 
 	TTF_Font* _font = NULL;		// global font
+	void renderText(SDL_Texture* text_texture, float xpos, float ypos);
+	void updateScoreText();
+
+	SDL_Texture* _countdownTimer;
+	SDL_Texture* _scoresTexture;
 
 	SDL_Texture* loadTexture(std::string path);
 	bool loadMedia();
+	SDL_Texture* loadFromRenderedText(std::string textureTex, SDL_Color textColor);
 
 	void checkCollisions();
 
