@@ -8,11 +8,15 @@ using std::endl;
 Game::Game() {
 	cout << "Game object initialized." << endl;
 
-	_ball = std::make_unique<Ball>(_gameWidth / 2, _gameHeight / 2, 7.5f);
-	_ball->setRandomVelocity();
+	_state = GameState::kMainMenu;
+	scores = { 0, 0 };
+	_ball = std::make_unique<Ball>(GAME_WIDTH / 2, GAME_HEIGHT / 2, 7.5f);
+
 	_leftPlatform = std::make_unique<Platform>(7, 150, 13, 73);
 	_rightPlatform = std::make_unique<Platform>(580, 150, 13, 73);
+
 	_running = true;
+	_gameStarted = false;
 	_frames = 0;
 }
 
@@ -47,7 +51,7 @@ bool Game::init() {
 
 	// Create Window
 	if ((_mainWindow = SDL_CreateWindow("Pong by Can", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-		_gameWidth, _gameHeight, SDL_WINDOW_SHOWN)) == NULL) {
+		GAME_WIDTH, GAME_HEIGHT, SDL_WINDOW_SHOWN)) == NULL) {
 		return false;
 	}
 
@@ -70,9 +74,6 @@ bool Game::init() {
 	if (!TTF_Init()) {
 		std::cout << "Failed to initialise SDL_ttf. SDL_ttf error: " << TTF_GetError() << "\n";
 	}
-
-	// Initialize surface
-	_surface = SDL_GetWindowSurface(_mainWindow);
 
 	// Load media
 	if (loadMedia() == false) {
@@ -126,6 +127,9 @@ void Game::onEvents(SDL_Event* event) {
 			break;
 		case SDLK_s:
 			_leftPlatform->moveDown();
+			break;
+		case SDLK_SPACE:
+			if (_state == GameState::kScoreScreen) _state = GameState::kPreStart;
 			break;
 		default:
 			break;
@@ -190,10 +194,10 @@ void bounceBall(float x, float y, Platform* platform, Ball* ball) {
 	float diffY = fabs(y - rectCenterY);
 
 	float yVel = diffY / diffX; 
-	if (ball->velocity().y < -1) yVel *= -1;									// check which direction ball was going in the y axis and keep it the same
+	if (ball->velocity().y < -1) yVel *= -1;	// check which direction ball was going in the y axis and keep it the same
 	if (y - ball->velocity().y >= platformBottom || y - ball->velocity().y <= platformTop)
 	{
-		yVel *= -1;					// if top or bottom of platform hit, change y direction
+		yVel *= -1;								// if top or bottom of platform hit, change y direction
 	}
 	
 	float xVel = -ball->velocity().x;
@@ -207,8 +211,8 @@ void Game::checkCollisions() {
 		_leftPlatform->curY(0);
 		_leftPlatform->stop();
 	}
-	if ((_leftPlatform->curY() + _leftPlatform->boundingBox().h) > (_gameHeight)) {
-		_leftPlatform->curY(_gameHeight - _leftPlatform->boundingBox().h);
+	if ((_leftPlatform->curY() + _leftPlatform->boundingBox().h) > (GAME_HEIGHT)) {
+		_leftPlatform->curY(GAME_HEIGHT - _leftPlatform->boundingBox().h);
 		_leftPlatform->stop();
 	}
 
@@ -217,8 +221,8 @@ void Game::checkCollisions() {
 		_rightPlatform->curY(0);
 		_rightPlatform->stop();
 	}
-	if ((_rightPlatform->curY() + _rightPlatform->boundingBox().h) > (_gameHeight)) {
-		_rightPlatform->curY(_gameHeight - _rightPlatform->boundingBox().h);
+	if ((_rightPlatform->curY() + _rightPlatform->boundingBox().h) > (GAME_HEIGHT)) {
+		_rightPlatform->curY(GAME_HEIGHT - _rightPlatform->boundingBox().h);
 		_rightPlatform->stop();
 	}
 
@@ -226,11 +230,15 @@ void Game::checkCollisions() {
 	float ballDiameter = 2 * _ball->boundingBox().r;
 	if (_ball->curX() < 0) {
 		// PLAYER 2 WINS
+		scores[1]++;
 		_ball->setVelocity({ 0, 0 });
+		_state = GameState::kScoreScreen;
 	}
-	if (_ball->curX() > _gameWidth - ballDiameter) {
+	if (_ball->curX() > GAME_WIDTH - ballDiameter) {
 		// PLAYER 1 WINS
+		scores[0]++;
 		_ball->setVelocity({ 0, 0 });
+		_state = GameState::kScoreScreen;
 	}
 	if (_ball->curY() < 0) {
 		float yVel = _ball->velocity().y;
@@ -239,13 +247,13 @@ void Game::checkCollisions() {
 		_ball->setVelocity({ xVel, -yVel });
 		_ball->curY(0);
 	}
-	if (_ball->curY() > _gameHeight - ballDiameter) {
+	if (_ball->curY() > GAME_HEIGHT - ballDiameter) {
 
 		float yVel = _ball->velocity().y;
 		float xVel = _ball->velocity().x;
 
 		_ball->setVelocity({ xVel, -yVel });
-		_ball->curY(_gameHeight - ballDiameter);
+		_ball->curY(GAME_HEIGHT - ballDiameter);
 	}
 
 	// Ball collision on platforms
@@ -261,20 +269,45 @@ void Game::checkCollisions() {
 		bounceBall(x, y, _rightPlatform.get(), _ball.get());
 	}
 }
+
 void Game::gameLoop() {
 
+	switch (_state)
+	{
+		case GameState::kMainMenu:{
+			scores = { 0, 0 };
+			_state = GameState::kPreStart;
+
+		}break;
+		case GameState::kPreStart:{
+			_gameStarted = false;
+			_ball->setVelocity({ 0,0 });
+			_ball->curX(GAME_WIDTH / 2);
+			_ball->curY(GAME_HEIGHT / 2);
+			_threadSafeTimer.start(std::chrono::milliseconds(3000));
+			_state = GameState::kStart;
+
+		}break;
+		case GameState::kStart:{
+			if (_threadSafeTimer.isCompleted() == true && _gameStarted == false) {
+				_ball->setRandomVelocity();
+				_gameStarted = true;
+			}
+			_leftPlatform->move();
+			_rightPlatform->move();
+			_ball->move();
+			checkCollisions();
+
+		}break;
+		case GameState::kScoreScreen:{
+			int a = 1;
+
+		}break;
+	}
+
+	std::cout << "Player 1 = " << scores[0] << " Player 2 = " << scores[1] << "\n";
 	auto ticks1 = SDL_GetTicks();
 	int frames_now = _frames;
-	
-	_leftPlatform->move();
-	_rightPlatform->move();
-	_ball->move();
-
-	checkCollisions();
-
-	
-	//while ((_frames-frames_now)/(SDL_GetTicks() - ticks1) <);
-	//SDL_Delay(10);
 }
 
 void Game::render() {
@@ -303,7 +336,7 @@ void Game::render() {
 	_frames++;
 	int t2 = SDL_GetTicks() - t1;
 	SDL_Delay(10- t2);
-	std::cout << "Time taken for render: "  << SDL_GetTicks() - t1<< "ms. Frames done : " << _frames << "\n";
+	//std::cout << "Time taken for render: "  << SDL_GetTicks() - t1<< "ms. Frames done : " << _frames << "\n";
 }
 
 void Game::cleanUp() {

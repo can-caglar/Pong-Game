@@ -19,7 +19,7 @@ Platform::Platform(const float& x, const float& y, const float& w, const float& 
 
 Ball::Ball(const float& x, const float& y, const float& r) {
 
-	setSpeed(2);
+	setSpeed(3);
 
 	//setRandomVelocity();
 

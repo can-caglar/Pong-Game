@@ -5,13 +5,20 @@
 #include <vector>
 #include <string>
 #include <SDL_ttf.h>
+#include <chrono>
+#include <mutex>
+#include <future>
 
 #include "GameObjects.h"
 #include "CollisionDetection.h"
+#include "Timer.h"
+
 
 enum class GameState {
 	kMainMenu,
+	kPreStart,
 	kStart,
+	kScoreScreen,
 };
 
 class Game{
@@ -19,18 +26,22 @@ class Game{
 private:
 	bool _running;
 	int _frames;
-	//std::vector<GameObjects>  //std::vector<SDL_Texture*> _textures;
+
+	Timer _threadSafeTimer;
+
+	std::vector<int> scores;
 
 	std::unique_ptr<Ball> _ball;
 	std::unique_ptr<Platform> _leftPlatform;
 	std::unique_ptr<Platform> _rightPlatform;
+	GameState _state;
+	bool _gameStarted;
 
 	SDL_Window* _mainWindow;
 	SDL_Renderer* _renderer;
-	SDL_Surface* _surface;
 
-	const int _gameWidth = 600;
-	const int _gameHeight = 400;
+	const int GAME_WIDTH = 600;
+	const int GAME_HEIGHT = 400;
 
 	TTF_Font* _font = NULL;		// global font
 
