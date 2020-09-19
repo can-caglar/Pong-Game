@@ -5,6 +5,8 @@ Platform::Platform(const float& x, const float& y, const float& w, const float& 
 	_velocity.x = 0;
 	_velocity.y = 0;
 
+	setSpeed(4);
+
 	_curX = x;
 	_curY = y;
 
@@ -17,24 +19,13 @@ Platform::Platform(const float& x, const float& y, const float& w, const float& 
 
 Ball::Ball(const float& x, const float& y, const float& r) {
 
-	_mt.seed(_rdevice());
-	std::uniform_int_distribution<int> dist(0, 1);
+	setSpeed(2);
 
-	if (dist(_mt) == 1)
-		_velocity.x = 2;
-	else
-		_velocity.x = -2;
-	
-	std::uniform_int_distribution<int> dist2(1, 3);
-	_velocity.y = static_cast<float>(dist2(_mt));
-
-	//_velocity.x = -2; // TODO: REMOVE THIS LINE
-	//_velocity.y = 0; // TODO: REMOVE THIS LINE
+	//setRandomVelocity();
 
 	_curX = x;
 	_curY = y;
-	
-	//_boundingBox = Circle();
+
 	_boundingBox.r = r;
 
 	// Account for the fact that textures are drawn at top left, 
@@ -42,6 +33,20 @@ Ball::Ball(const float& x, const float& y, const float& r) {
 	_boundingBox.x = x + r;
 	_boundingBox.y = y + r;
 	
+}
+
+// Sets a random y velocity going towards left of right. left/right speed remains the same as before.
+void Ball::setRandomVelocity() {
+	_mt.seed(_rdevice());
+	std::uniform_int_distribution<int> dist(0, 1);
+
+	if (dist(_mt) == 1)
+		_velocity.x = _speed;
+	else
+		_velocity.x = -_speed;
+
+	std::uniform_int_distribution<int> dist2(1, 3);
+	_velocity.y = static_cast<float>(dist2(_mt));
 }
 
 void Ball::render(SDL_Renderer* renderer) {
@@ -63,17 +68,15 @@ void Platform::render(SDL_Renderer* renderer) {
 }
 
 void Platform::moveUp() {
-	std::cout << "Platform moving up" << std::endl;
-	setVelocity(Velocity{ 0, -3 });
+	setVelocity(Vect_2D{ 0, -_speed });
 }
 
 void Platform::moveDown() {
-	std::cout << "Platform moving down" << std::endl;
-	setVelocity(Velocity{ 0, 3 });
+	setVelocity(Vect_2D{ 0, _speed });
 }
 
 void Platform::stop() {
-	setVelocity(Velocity{ 0, 0 });
+	setVelocity(Vect_2D{ 0, 0 });
 }
 
 void GameObjects<Circle>::updateBoundingBox() {

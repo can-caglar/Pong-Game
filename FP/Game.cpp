@@ -9,7 +9,8 @@ Game::Game() {
 	cout << "Game object initialized." << endl;
 
 	_ball = std::make_unique<Ball>(_gameWidth / 2, _gameHeight / 2, 7.5f);
-	_leftPlatform = std::make_unique<Platform>(20, 150, 13, 73);
+	_ball->setRandomVelocity();
+	_leftPlatform = std::make_unique<Platform>(7, 150, 13, 73);
 	_rightPlatform = std::make_unique<Platform>(580, 150, 13, 73);
 	_running = true;
 	_frames = 0;
@@ -22,6 +23,7 @@ int Game::execute() {
 
 	SDL_Event e;
 	cout << "Starting game..." << endl;
+	SDL_Delay(1000);
 	while (_running) {
 		while (SDL_PollEvent(&e)) {
 			onEvents(&e);
@@ -64,6 +66,11 @@ bool Game::init() {
 		return false;
 	}
 
+	// Initialize SDL TTF (text render)
+	if (!TTF_Init()) {
+		std::cout << "Failed to initialise SDL_ttf. SDL_ttf error: " << TTF_GetError() << "\n";
+	}
+
 	// Initialize surface
 	_surface = SDL_GetWindowSurface(_mainWindow);
 
@@ -80,8 +87,6 @@ bool Game::loadMedia() {
 	_ball->setTexture(loadTexture("Resources/ball.png"));
 	_leftPlatform->setTexture(loadTexture("Resources/plank.bmp"));
 	_rightPlatform->setTexture(loadTexture("Resources/plank2.bmp"));
-
-	
 
 	return true;
 }
@@ -147,9 +152,57 @@ void Game::onEvents(SDL_Event* event) {
 	}
 }
 
+void bounceBall(float x, float y, Platform* platform, Ball* ball) {
+	float platformLeft;
+	float platformRight;
+	float platformTop;
+	float platformBottom;
+
+	float rectCenterX;
+	float rectCenterY;
+
+	float newXPos;
+	float newYPos;
+
+	// Move ball back one step
+	//newXPos = ball->curX() - ball->velocity().x;
+	//newYPos = ball->curY() - ball->velocity().y;
+	//ball->curX(newXPos);
+	//ball->curY(newYPos);
+
+	// Figure out where from the centre of rectangle the collision occured
+	// Reflect ball back at this angle
+	//	*   * O
+	//	*   *
+	//	* c *
+	//	*   *
+	//	*   *
+
+	platformLeft = platform->boundingBox().x;
+	platformRight = platform->boundingBox().x + platform->boundingBox().w;
+	platformTop = platform->boundingBox().y;
+	platformBottom = platform->boundingBox().y + platform->boundingBox().h;
+
+	rectCenterX = (platformLeft + platformRight) / 2;
+	rectCenterY = (platformBottom + platformTop) / 2;
+
+	float diffX = fabs(x - rectCenterX);
+	float diffY = fabs(y - rectCenterY);
+
+	float yVel = diffY / diffX; 
+	if (ball->velocity().y < -1) yVel *= -1;									// check which direction ball was going in the y axis and keep it the same
+	if (y - ball->velocity().y >= platformBottom || y - ball->velocity().y <= platformTop)
+	{
+		yVel *= -1;					// if top or bottom of platform hit, change y direction
+	}
+	
+	float xVel = -ball->velocity().x;
+
+	ball->setVelocity({ xVel, yVel });
+}
 void Game::checkCollisions() {
 
-	// Left platform
+	// Left platform on boundary
 	if (_leftPlatform->curY() < 0) {
 		_leftPlatform->curY(0);
 		_leftPlatform->stop();
@@ -159,18 +212,17 @@ void Game::checkCollisions() {
 		_leftPlatform->stop();
 	}
 
-	// Right platform
+	// Right platform on boundary
 	if (_rightPlatform->curY() < 0) {
 		_rightPlatform->curY(0);
 		_rightPlatform->stop();
 	}
-
 	if ((_rightPlatform->curY() + _rightPlatform->boundingBox().h) > (_gameHeight)) {
 		_rightPlatform->curY(_gameHeight - _rightPlatform->boundingBox().h);
 		_rightPlatform->stop();
 	}
 
-	// Ball
+	// Ball on boundary
 	float ballDiameter = 2 * _ball->boundingBox().r;
 	if (_ball->curX() < 0) {
 		// PLAYER 2 WINS
@@ -183,7 +235,6 @@ void Game::checkCollisions() {
 	if (_ball->curY() < 0) {
 		float yVel = _ball->velocity().y;
 		float xVel = _ball->velocity().x;
-		float curY = _ball->curY();
 
 		_ball->setVelocity({ xVel, -yVel });
 		_ball->curY(0);
@@ -192,46 +243,43 @@ void Game::checkCollisions() {
 
 		float yVel = _ball->velocity().y;
 		float xVel = _ball->velocity().x;
-		float curY = _ball->curY();
 
 		_ball->setVelocity({ xVel, -yVel });
 		_ball->curY(_gameHeight - ballDiameter);
 	}
 
-	if (CollisionDetection::detectCollision(_ball->boundingBox(), _leftPlatform->boundingBox())) {
-		float yVel = _ball->velocity().y;
-		float xVel = _ball->velocity().x;
-		float curY = _ball->curY();
-
-		_ball->setVelocity({ -xVel, yVel });
-		//_ball->curY(_gameHeight - ballDiameter);
+	// Ball collision on platforms
+	float x = -1;
+	float y = -1;
+	CollisionDetection::detectCollision(_ball->boundingBox(), _leftPlatform->boundingBox(), x, y);
+	if (x != -1 && y != -1) {
+		bounceBall(x, y, _leftPlatform.get(), _ball.get());
 	}
-	else if (CollisionDetection::detectCollision(_ball->boundingBox(), _rightPlatform->boundingBox())) {
-		float yVel = _ball->velocity().y;
-		float xVel = _ball->velocity().x;
-		float curY = _ball->curY();
 
-		_ball->setVelocity({ -xVel, yVel });
-		//_ball->curY(_gameHeight - ballDiameter);
+	CollisionDetection::detectCollision(_ball->boundingBox(), _rightPlatform->boundingBox(), x, y);
+	if (x != -1 && y != -1) {
+		bounceBall(x, y, _rightPlatform.get(), _ball.get());
 	}
 }
 void Game::gameLoop() {
 
 	auto ticks1 = SDL_GetTicks();
 	int frames_now = _frames;
-
+	
 	_leftPlatform->move();
 	_rightPlatform->move();
 	_ball->move();
 
 	checkCollisions();
 
-	auto time_passed = (SDL_GetTicks() - ticks1);
-	SDL_Delay(10);
+	
+	//while ((_frames-frames_now)/(SDL_GetTicks() - ticks1) <);
+	//SDL_Delay(10);
 }
 
 void Game::render() {
 
+	int t1 = SDL_GetTicks();
 	SDL_RenderClear(_renderer);
 	
 	_leftPlatform->render(_renderer);
@@ -250,8 +298,12 @@ void Game::render() {
 	////SDL_SetRenderFillRect(renderer, rect)
 
 	//// SDL_GetTicks(); //returns time in ms since sdl init. SDL_Delay() // DELAYS
+
 	SDL_RenderPresent(_renderer);
 	_frames++;
+	int t2 = SDL_GetTicks() - t1;
+	SDL_Delay(10- t2);
+	std::cout << "Time taken for render: "  << SDL_GetTicks() - t1<< "ms. Frames done : " << _frames << "\n";
 }
 
 void Game::cleanUp() {
@@ -263,6 +315,7 @@ void Game::cleanUp() {
 
 	IMG_Quit();
 	SDL_Quit();
+	TTF_Quit();
 
 }
 

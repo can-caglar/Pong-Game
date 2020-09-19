@@ -1,53 +1,54 @@
 #include "CollisionDetection.h"
 #include <iostream>
 
-bool CollisionDetection::detectCollision(const Circle& circle, const SDL_Rect& rectangle) {
+// Checks if circle and rectangle have collided. Returns 2 floats representing where on x and y they collided. Both will be -1, -1 if no collision.
+void CollisionDetection::detectCollision(const Circle& circle, const SDL_Rect& rectangle, float& collision_x, float& collision_y) {
 
-	bool collision = false;
-	// Platform boundaries
+	collision_x = -1;
+	collision_y = -1;
 
-	std::cout << "circle x: " << circle.x << " y: " << circle.y << " r: " << circle.r << "\t";
-	std::cout << "rectangle left x: " << rectangle.x << " y: " << rectangle.y << " rectangle right x: " << rectangle.x + rectangle.w << " down y: " << rectangle.y + rectangle.h<< "\t";
+	float rect_y_to_observe = 0;
+	float rect_x_to_observe = 0;
+
+	// Check where on the y axis the circle is in relation to the rectangle
+	if (circle.y > rectangle.y + rectangle.h)  rect_y_to_observe = rectangle.y + rectangle.h;	// circle below rectangle
+	else if (circle.y < rectangle.y) rect_y_to_observe = rectangle.y;							// circle above rectangle
+	else rect_y_to_observe = circle.y;															// circle somewhere in the middle of rectangle
 
 	// If circle is to the right of rectangle
 	if (circle.x > rectangle.x + rectangle.w) {
-		std::cout << "circle to the right: \n";
-		float rect_x_to_observe = rectangle.x + rectangle.w;
-		float rect_y_to_observe = 0;
-		if (circle.y > rectangle.y + rectangle.h)  rect_y_to_observe = rectangle.y + rectangle.h;	// circle below rectangle
-		else if (circle.y < rectangle.y) rect_y_to_observe = rectangle.y;							// circle above rectangle
-		else rect_y_to_observe = circle.y;															// circle somewhere in the middle of rectangle
+		rect_x_to_observe = rectangle.x + rectangle.w;
 
 		float d = square_of_distance(circle.x, circle.y, rect_x_to_observe, rect_y_to_observe);
 		if (d < circle.r) {
-			collision = true;
+			//COLLISION
+			collision_x = rect_x_to_observe;
+			collision_y = rect_y_to_observe;
+			return;
 		}
 	}
 	// If circle is to the left of platform
 	if (circle.x < rectangle.x) {
-		std::cout << "circle to the left: \n";
-		float rect_x_to_observe = rectangle.x;
-		float rect_y_to_observe = 0;
-		if (circle.y > rectangle.y + rectangle.h)  rect_y_to_observe = rectangle.y + rectangle.h;	// circle below rectangle
-		else if (circle.y < rectangle.y) rect_y_to_observe = rectangle.y;							// circle above rectangle
-		else rect_y_to_observe = circle.y;															// circle somewhere in the middle of rectangle
+		rect_x_to_observe = rectangle.x;
 
 		float d = square_of_distance(circle.x, circle.y, rect_x_to_observe, rect_y_to_observe);
 		if (d < circle.r) {
-			collision = true;
+			//COLLLISION
+			collision_x = rect_x_to_observe;
+			collision_y = rect_y_to_observe;
+			return;
 		}
 	}
 	// If circle is above platform
-	if (circle.x > rectangle.x) {
-
+	if (circle.y > rectangle.y) {
+		int a = 1;
 	}
 
 	// If circle is below platform 2
-	if (circle.x < rectangle.y + rectangle.h) {
-
+	if (circle.y < rectangle.y + rectangle.h) {
+		int a = 1;
 	}
 
-	return collision;
 }
 
 float CollisionDetection::square_of_distance(float x1, float y1, float x2, float y2) {

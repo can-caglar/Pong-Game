@@ -5,7 +5,7 @@
 #include <iostream>
 #include <random>
 
-struct Velocity {
+struct Vect_2D {
 
 	float x;
 	float y;
@@ -23,7 +23,9 @@ class GameObjects{
 
 protected:
 
-	Velocity _velocity;
+	Vect_2D _velocity;
+	float _speed;
+
 	float _curX;
 	float _curY;
 	SDL_Texture* _texture;	// TODO need to destroy textures // SDL_DestroyTexture(t);
@@ -32,7 +34,7 @@ protected:
 public:
 
 	// Accessors
-	Velocity velocity() { return _velocity; }
+	Vect_2D velocity() { return _velocity; }
 	float curX() { return _curX; }
 	float curY() { return _curY; }
 	T boundingBox() { return _boundingBox;  }
@@ -40,7 +42,8 @@ public:
 
 	// Modifiers
 	void setTexture(SDL_Texture* t) { _texture = t; }
-	void setVelocity(Velocity v) { _velocity = v;  }
+	void setVelocity(Vect_2D v) { _velocity = v;  }
+	void setSpeed(float s) { _speed = s;  }
 	void curX(float n); 
 	void curY(float n); 
 	
@@ -62,6 +65,7 @@ public:
 
 	// Functions
 	void render(SDL_Renderer* renderer) override;
+	void setRandomVelocity();
 };
 
 class Platform : public GameObjects<SDL_Rect> {

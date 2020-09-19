@@ -4,8 +4,15 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <SDL_ttf.h>
 
 #include "GameObjects.h"
+#include "CollisionDetection.h"
+
+enum class GameState {
+	kMainMenu,
+	kStart,
+};
 
 class Game{
 
@@ -25,19 +32,24 @@ private:
 	const int _gameWidth = 600;
 	const int _gameHeight = 400;
 
+	TTF_Font* _font = NULL;		// global font
+
 	SDL_Texture* loadTexture(std::string path);
 	bool loadMedia();
 
 	void checkCollisions();
-	
-public:
-	Game();
-	int execute(); // Launch game
 
 	bool init();
 	void onEvents(SDL_Event* event);
 	void gameLoop();
 	void render();
 	void cleanUp();
+	void start();
+	
+public:
+	Game();
+	int execute(); // Launch game
+
+	
 };
 

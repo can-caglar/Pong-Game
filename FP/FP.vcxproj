@@ -82,24 +82,23 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\DEV\SDL2_image-devel-2.0.5-VC\SDL2_image-2.0.5\include;C:\DEV\VisualStudio\SDL2-devel-2.0.12-VC\SDL2-2.0.12\include;$(IncludePath)</IncludePath>
-    <LibraryPath>
-    </LibraryPath>
+    <IncludePath>C:\DEV\SDL2_image-devel-2.0.5-VC\SDL2_image-2.0.5\include;C:\DEV\VisualStudio\SDL2-devel-2.0.12-VC\SDL2-2.0.12\include;C:\DEV\SDL2_ttf-devel-2.0.15-VC\SDL2_ttf-2.0.15\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\DEV\VisualStudio\SDL2-devel-2.0.12-VC\SDL2-2.0.12\lib\x64;C:\DEV\SDL2_image-devel-2.0.5-VC\SDL2_image-2.0.5\lib\x64;C:\DEV\SDL2_ttf-devel-2.0.15-VC\SDL2_ttf-2.0.15\lib\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\DEV\SDL2_image-devel-2.0.5-VC\SDL2_image-2.0.5\include;C:\DEV\VisualStudio\SDL2-devel-2.0.12-VC\SDL2-2.0.12\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\DEV\VisualStudio\SDL2-devel-2.0.12-VC\SDL2-2.0.12\lib\x64;C:\DEV\SDL2_image-devel-2.0.5-VC\SDL2_image-2.0.5\lib\x64;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\DEV\SDL2_image-devel-2.0.5-VC\SDL2_image-2.0.5\include;C:\DEV\VisualStudio\SDL2-devel-2.0.12-VC\SDL2-2.0.12\include;C:\DEV\SDL2_ttf-devel-2.0.15-VC\SDL2_ttf-2.0.15\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\DEV\VisualStudio\SDL2-devel-2.0.12-VC\SDL2-2.0.12\lib\x64;C:\DEV\SDL2_image-devel-2.0.5-VC\SDL2_image-2.0.5\lib\x64;C:\DEV\SDL2_ttf-devel-2.0.15-VC\SDL2_ttf-2.0.15\lib\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>C:\DEV\VisualStudio\SDL2-devel-2.0.12-VC\SDL2-2.0.12\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\DEV\VisualStudio\SDL2-devel-2.0.12-VC\SDL2-2.0.12\lib\x64;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\DEV\SDL2_image-devel-2.0.5-VC\SDL2_image-2.0.5\include;C:\DEV\VisualStudio\SDL2-devel-2.0.12-VC\SDL2-2.0.12\include;C:\DEV\SDL2_ttf-devel-2.0.15-VC\SDL2_ttf-2.0.15\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\DEV\VisualStudio\SDL2-devel-2.0.12-VC\SDL2-2.0.12\lib\x64;C:\DEV\SDL2_image-devel-2.0.5-VC\SDL2_image-2.0.5\lib\x64;C:\DEV\SDL2_ttf-devel-2.0.15-VC\SDL2_ttf-2.0.15\lib\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>C:\DEV\VisualStudio\SDL2-devel-2.0.12-VC\SDL2-2.0.12\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\DEV\VisualStudio\SDL2-devel-2.0.12-VC\SDL2-2.0.12\lib\x64;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\DEV\SDL2_image-devel-2.0.5-VC\SDL2_image-2.0.5\include;C:\DEV\VisualStudio\SDL2-devel-2.0.12-VC\SDL2-2.0.12\include;C:\DEV\SDL2_ttf-devel-2.0.15-VC\SDL2_ttf-2.0.15\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\DEV\VisualStudio\SDL2-devel-2.0.12-VC\SDL2-2.0.12\lib\x64;C:\DEV\SDL2_image-devel-2.0.5-VC\SDL2_image-2.0.5\lib\x64;C:\DEV\SDL2_ttf-devel-2.0.15-VC\SDL2_ttf-2.0.15\lib\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -112,7 +111,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>sdl2main.lib;sdl2.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>sdl2main.lib;sdl2.lib;SDL2_ttf.lib;SDL2_image.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -126,7 +125,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>sdl2main.lib;sdl2.lib;SDL2_image.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>sdl2main.lib;sdl2.lib;SDL2_ttf.lib;SDL2_image.lib;SDL2_image.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -144,7 +143,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>sdl2main.lib;sdl2.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>sdl2main.lib;sdl2.lib;SDL2_ttf.lib;SDL2_image.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -162,7 +161,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>sdl2main.lib;sdl2.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>sdl2main.lib;sdl2.lib;SDL2_ttf.lib;SDL2_image.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
