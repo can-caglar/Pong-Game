@@ -1,11 +1,11 @@
 #include "GameObjects.h"
 
-Platform::Platform(const float& x, const float& y, const float& w, const float& h) {
+Platform::Platform(const int& x, const int& y, const int& w, const int& h) {
 
 	_velocity.x = 0;
 	_velocity.y = 0;
 
-	setSpeed(4);
+	setSpeed(7);
 
 	_curX = x;
 	_curY = y;
@@ -17,9 +17,9 @@ Platform::Platform(const float& x, const float& y, const float& w, const float& 
 	_boundingBox.h = h;
 }
 
-Ball::Ball(const float& x, const float& y, const float& r) {
+Ball::Ball(const int& x, const int& y, const int& r) {
 
-	setSpeed(3);
+	setSpeed(8);
 
 	//setRandomVelocity();
 
@@ -37,7 +37,9 @@ Ball::Ball(const float& x, const float& y, const float& r) {
 
 // Sets a random y velocity going towards left of right. left/right speed remains the same as before.
 void Ball::setRandomVelocity() {
-	_mt.seed(_rdevice());
+	int a = _rdevice();
+	std::cout << "random seed = " << a << "\n";
+	_mt.seed(a);
 	std::uniform_int_distribution<int> dist(0, 1);
 
 	if (dist(_mt) == 1)
@@ -45,8 +47,11 @@ void Ball::setRandomVelocity() {
 	else
 		_velocity.x = -_speed;
 
-	std::uniform_int_distribution<int> dist2(1, 3);
-	_velocity.y = static_cast<float>(dist2(_mt));
+	std::uniform_int_distribution<int> dist2(-3, 3);
+	_velocity.y = dist2(_mt);
+
+	//_velocity.y = 0; //TODO REMVOE THESE
+	//_velocity.x = 3; // TODO REMOVE THESE
 }
 
 void Ball::render(SDL_Renderer* renderer) {

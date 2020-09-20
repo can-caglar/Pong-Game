@@ -1,56 +1,34 @@
 #include "CollisionDetection.h"
 #include <iostream>
 
-// Checks if circle and rectangle have collided. Returns 2 floats representing where on x and y they collided. Both will be -1, -1 if no collision.
-void CollisionDetection::detectCollision(const Circle& circle, const SDL_Rect& rectangle, float& collision_x, float& collision_y) {
+// Checks if circle and rectangle have collided. Returns 2 ints representing where on x and y they collided. Both will be -1, -1 if no collision.
+void CollisionDetection::detectCollision(const Circle& circle, const SDL_Rect& rectangle, int& collision_x, int& collision_y) {
 
 	collision_x = -1;
 	collision_y = -1;
 
-	float rect_y_to_observe = 0;
-	float rect_x_to_observe = 0;
+	int rectCollidePointY = 0;
+	int rectCollidePointX = 0;
 
 	// Check where on the y axis the circle is in relation to the rectangle
-	if (circle.y > rectangle.y + rectangle.h)  rect_y_to_observe = rectangle.y + rectangle.h;	// circle below rectangle
-	else if (circle.y < rectangle.y) rect_y_to_observe = rectangle.y;							// circle above rectangle
-	else rect_y_to_observe = circle.y;															// circle somewhere in the middle of rectangle
+	if (circle.y > rectangle.y + rectangle.h)  rectCollidePointY = rectangle.y + rectangle.h;	// circle below rectangle
+	else if (circle.y < rectangle.y) rectCollidePointY = rectangle.y;							// circle above rectangle
+	else rectCollidePointY = circle.y;															// circle somewhere in the middle of rectangle in y axis
 
-	// If circle is to the right of rectangle
-	if (circle.x > rectangle.x + rectangle.w) {
-		rect_x_to_observe = rectangle.x + rectangle.w;
+	// Check where on the x axis the circle is in relation to the rectangle
+	if (circle.x > rectangle.x + rectangle.w)  rectCollidePointX = rectangle.x + rectangle.w;	// circle to the right of whole rectangle
+	else if (circle.x < rectangle.x) rectCollidePointX = rectangle.x;							// circle to the left of whole rectangle
+	else rectCollidePointX = circle.x;															// circle somewhere in the middle of rectangle in x axis
 
-		float d = square_of_distance(circle.x, circle.y, rect_x_to_observe, rect_y_to_observe);
-		if (d < circle.r) {
-			//COLLISION
-			collision_x = rect_x_to_observe;
-			collision_y = rect_y_to_observe;
-			return;
-		}
+	int d = square_of_distance(circle.x, circle.y, rectCollidePointX, rectCollidePointY);
+
+	if (d < pow(circle.r, 2)) {
+		collision_x = rectCollidePointX;
+		collision_y = rectCollidePointY;
+		return;
 	}
-	// If circle is to the left of platform
-	if (circle.x < rectangle.x) {
-		rect_x_to_observe = rectangle.x;
-
-		float d = square_of_distance(circle.x, circle.y, rect_x_to_observe, rect_y_to_observe);
-		if (d < circle.r) {
-			//COLLLISION
-			collision_x = rect_x_to_observe;
-			collision_y = rect_y_to_observe;
-			return;
-		}
-	}
-	// If circle is above platform
-	if (circle.y > rectangle.y) {
-		int a = 1;
-	}
-
-	// If circle is below platform 2
-	if (circle.y < rectangle.y + rectangle.h) {
-		int a = 1;
-	}
-
 }
 
-float CollisionDetection::square_of_distance(float x1, float y1, float x2, float y2) {
-	return powf(x1 - x2, 2) + powf(y1 - y2, 2);
+int CollisionDetection::square_of_distance(int x1, int y1, int x2, int y2) {
+	return static_cast<int>(pow(x1 - x2, 2) + pow(y1 - y2, 2));
 }

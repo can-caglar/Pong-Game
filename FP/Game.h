@@ -28,6 +28,7 @@ class Game{
 private:
 	bool _running;
 	int _frames;
+	uint32_t _timeAtLaunch;
 
 	Timer _threadSafeTimer;
 
@@ -46,7 +47,7 @@ private:
 	const int GAME_HEIGHT = 400;
 
 	TTF_Font* _font = NULL;		// global font
-	void renderText(SDL_Texture* text_texture, float xpos, float ypos);
+	void renderText(SDL_Texture* text_texture, int xpos, int ypos);
 	void updateScoreText();
 
 	SDL_Texture* _countdownTimer;
@@ -56,7 +57,7 @@ private:
 	bool loadMedia();
 	SDL_Texture* loadFromRenderedText(std::string textureTex, SDL_Color textColor);
 
-	void checkCollisions();
+	void checkAndReactToCollisions();
 
 	bool init();
 	void onEvents(SDL_Event* event);

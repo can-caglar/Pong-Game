@@ -5,10 +5,8 @@
 class CollisionDetection
 {
 public:
-	static float square_of_distance(float x1, float y1, float x2, float y2);
-	static void detectCollision(const Circle& item1, const SDL_Rect& item2, float& collisionX, float& collisionY);
+	static int square_of_distance(int x1, int y1, int x2, int y2);
+	static void detectCollision(const Circle& item1, const SDL_Rect& item2, int& collisionX, int& collisionY);
 
-	//static bool detectCollision(const SDL_Rect& item1, const SDL_Rect& item2);
-	//static bool detectCollision(const Circle& item1, );
 };
 
