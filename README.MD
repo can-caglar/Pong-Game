@@ -36,10 +36,11 @@ This project is a submission for the Udacity C++ Nanodegree program capstone pro
 ## Basic Build Instructions
 
 1. Clone this repo.
-2. Make a build directory in the top level directory: `mkdir build && cd build`
-3. Compile: `cmake .. && make`
-4. Copy resources folder to executable folder `cp -r ../FP/Resources .`
-5. Run it: `./FP`
+2. Enter directory: `cd Pong-Game`
+3. Make a build directory in the top level directory: `mkdir build && cd build`
+4. Compile: `cmake .. && make`
+5. Copy resources folder to executable folder `cp -r ../FP/Resources .`
+6. Run it: `./FP`
 
 
 ## Gameplay instructions
