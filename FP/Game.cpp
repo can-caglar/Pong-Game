@@ -425,6 +425,9 @@ void Game::render() {
 	}
 	else if (_state == GameState::kScoreScreen) {
 		updateScoreTextTure();
+		_countdownTimer = loadFromRenderedText("Press SPACE to re-match", white, _fonts[1]);
+		SDL_QueryTexture(_countdownTimer, NULL, NULL, &w, NULL);
+		renderText(_countdownTimer, GAME_WIDTH / 2 - (w / 2), 350);
 	}
 
 	_leftPlatform->render(_renderer);
