@@ -23,7 +23,7 @@ This project is a submission for the Udacity C++ Nanodegree program capstone pro
   * All installation instructions can be found [here](https://wiki.libsdl.org/Installation)
   * Note that for Linux, an `apt` or `apt-get` installation is preferred to building from source.
 * SDL_Image >= 2.0
-	* All installation instructions can be found [here](https://lazyfoo.net/tutorials/SDL/06_extension_libraries_and_loading_other_image_formats/index.php). [Here](
+	* All installation instructions can be found [here](https://lazyfoo.net/tutorials/SDL/06_extension_libraries_and_loading_other_image_formats/index.php). Download link can be found [here](
 	https://www.libsdl.org/tmp/SDL_image/) is the official site.
 * SDL_ttf >= 2.0
 	* Follow the same installation procedure as SDL_Image. Download link to library is [here](https://www.libsdl.org/projects/SDL_ttf/).
