@@ -17,7 +17,6 @@ private:
 
 	bool _isRunning;
 	bool _completed;
-	//std::chrono::milliseconds time_remaining;
 
 	void delay(const std::chrono::milliseconds& ms) {
 		std::unique_lock<std::mutex> lck(mtx);

@@ -34,9 +34,6 @@ private:
 
 	std::vector<int> _scoresVector;
 
-	std::unique_ptr<Ball> _ball;
-	std::unique_ptr<Platform> _leftPlatform;
-	std::unique_ptr<Platform> _rightPlatform;
 	GameState _state;
 	bool _gameStarted;
 
@@ -46,18 +43,24 @@ private:
 	const int GAME_WIDTH = 600;
 	const int GAME_HEIGHT = 400;
 
-	TTF_Font* _font = NULL;		// global font
+	std::unique_ptr<Ball> _ball;
+	std::unique_ptr<Platform> _leftPlatform;
+	std::unique_ptr<Platform> _rightPlatform;
+
+	std::vector<TTF_Font*> _fonts;		// global font
 	void renderText(SDL_Texture* text_texture, int xpos, int ypos);
-	void updateScoreText();
+	void updateScoreTextTure();
 
 	SDL_Texture* _countdownTimer;
 	SDL_Texture* _scoresTexture;
+	SDL_Texture* _controlsTexture;
 
 	SDL_Texture* loadTexture(std::string path);
 	bool loadMedia();
-	SDL_Texture* loadFromRenderedText(std::string textureTex, SDL_Color textColor);
+	SDL_Texture* loadFromRenderedText(std::string textureTex, SDL_Color textColor, TTF_Font* font);
 
-	void checkAndReactToCollisions();
+	void checkAndReactToBallCollisions(int& winner);
+	void checkAndReactToPlatformCollisions();
 
 	bool init();
 	void onEvents(SDL_Event* event);

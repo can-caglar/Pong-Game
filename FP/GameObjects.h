@@ -32,6 +32,15 @@ protected:
 	T _boundingBox;
 
 public:
+	// Constructors
+	GameObjects() = default;
+	GameObjects(GameObjects& other) = delete;
+	GameObjects& operator=(GameObjects& other) = delete;
+	GameObjects(GameObjects&& other) = delete;
+	GameObjects& operator=(GameObjects&& other) = delete;
+
+	// Destructor
+	~GameObjects() { SDL_DestroyTexture(_texture); }
 
 	// Accessors
 	Vect_2D velocity() { return _velocity; }
@@ -64,8 +73,9 @@ public:
 	Ball(const int& x, const int& y, const int& r);
 
 	// Functions
-	void render(SDL_Renderer* renderer) override;
 	void setRandomVelocity();
+	void render(SDL_Renderer* renderer) override;
+	
 };
 
 class Platform : public GameObjects<SDL_Rect> {

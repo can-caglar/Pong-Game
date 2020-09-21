@@ -50,8 +50,6 @@ void Ball::setRandomVelocity() {
 	std::uniform_int_distribution<int> dist2(-3, 3);
 	_velocity.y = dist2(_mt);
 
-	//_velocity.y = 0; //TODO REMVOE THESE
-	//_velocity.x = 3; // TODO REMOVE THESE
 }
 
 void Ball::render(SDL_Renderer* renderer) {
