@@ -4,7 +4,7 @@
 
 A classic game of Pong implemented using the SDL2 library. 
 
-This project is a submission for the Udacity C++ Nanodegree program capstone project.
+This project is a submission for the Udacity C++ Nanodegree program capstone project. No template code from Udacity was used.
 
 ---
 ## Expected Behavior
