@@ -38,8 +38,8 @@ This project is a submission for the Udacity C++ Nanodegree program capstone pro
 1. Clone this repo.
 2. Make a build directory in the top level directory: `mkdir build && cd build`
 3. Compile: `cmake .. && make`
-4. Copy resources folder 
-5. Run it: `./Pong .
+4. Copy resources folder to executable folder `cp -r ../FP/Resources .`
+5. Run it: `./FP`
 
 
 ## Gameplay instructions
@@ -55,20 +55,18 @@ Press SPACE to start the game.
 ## Rubric points addressed
 
 * The project demonstrates an understanding of C++ functions and control structures.
-	* 
+	* Game.cpp, line 267
 * The project uses Object Oriented Programming techniques.
-	*
+	* GameObjects.h
 * Classes use appropriate access specifiers for class members.
-	*
-* Class constructors utilize member initialization lists.
-	*
+	* GameObjects.h
 * Classes abstract implementation details from their interfaces.
-	*
+	* Game.h
 * The project follows the Rule of 5.
-	*
+	* GameObjects.h line 36-40
 * The project uses smart pointers instead of raw pointers.
-	* 
+	* Game.h line 46-48
 * The project uses multithreading.
-	*
+	* Timer.cpp line 34
 * A mutex or lock is used in the project.
-	*
+	* Timer.cpp line 20
