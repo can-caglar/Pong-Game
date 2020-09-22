@@ -40,7 +40,7 @@ This project is a submission for the Udacity C++ Nanodegree program capstone pro
 3. Make a build directory in the top level directory: `mkdir build && cd build`
 4. Compile: `cmake .. && make`
 5. Copy resources folder to executable folder `cp -r ../FP/Resources .`
-6. Run it: `./FP`
+6. Run it: `./PongByCan`
 
 
 ## Gameplay instructions
