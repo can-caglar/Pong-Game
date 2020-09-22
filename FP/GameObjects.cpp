@@ -82,11 +82,13 @@ void Platform::stop() {
 	setVelocity(Vect_2D{ 0, 0 });
 }
 
+template<>
 void GameObjects<Circle>::updateBoundingBox() {
 	_boundingBox.x = _curX + _boundingBox.r;
 	_boundingBox.y = _curY + _boundingBox.r;
 }
 
+template<>
 void GameObjects<SDL_Rect>::updateBoundingBox() {
 	_boundingBox.x = _curX;
 	_boundingBox.y = _curY;
