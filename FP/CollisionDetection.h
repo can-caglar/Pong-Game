@@ -1,5 +1,4 @@
 #pragma once
-#include <cmath>
 #include "GameObjects.h"
 
 class CollisionDetection
