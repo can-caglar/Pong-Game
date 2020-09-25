@@ -25,6 +25,10 @@ enum class GameState {
 
 class Game{
 
+public:
+	Game();
+	int execute(); // Launch game
+
 private:
 	bool _running;
 	int _frames;
@@ -67,12 +71,5 @@ private:
 	void gameLoop();
 	void render();
 	void cleanUp();
-	void start();
-	
-public:
-	Game();
-	int execute(); // Launch game
-
-	
 };
 
