@@ -3,8 +3,12 @@
 #include <vector>
 #include <string>
 #include <SDL_ttf.h>
+
 #include "GameObjects.h"
 #include "Timer.h"
+
+#include "Ball.h"
+#include "Platform.h"
 
 class Timer;
 

@@ -1,4 +1,6 @@
 #pragma once
+#include <SDL.h>
+#include <SDL_image.h>
 #include <random>
 
 struct Vect_2D {
@@ -57,34 +59,6 @@ protected:
 	T _boundingBox;
 };
 
-class Ball : public GameObjects<Circle> {
-
-public:
-	Ball() = default;
-	Ball(const int& x, const int& y, const int& r);
-
-	// Functions
-	void setRandomVelocity();
-	void render(SDL_Renderer* renderer) override;
-
-private:
-	std::mt19937 _mt;
-	std::random_device _rdevice;
-
-};
-
-class Platform : public GameObjects<SDL_Rect> {
-
-public:
-	Platform() = default;
-	Platform(const int& x, const int& y, const int& w, const int& h);
-
-	// Functions
-	void moveUp();
-	void moveDown();
-	void stop();
-	void render(SDL_Renderer * renderer) override;
-};
 
 template <typename T>
 void GameObjects<T>::move() {
