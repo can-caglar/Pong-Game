@@ -1,9 +1,13 @@
+#include <iomanip>
+#include <sstream>
+#include <iostream>
+#include <SDL_image.h>
+
 #include "Game.h"
 #include "CollisionDetection.h"
 
 using std::cout;
 using std::endl;
-
 
 Game::Game() {
 	cout << "Game object initialized." << endl;

@@ -1,8 +1,4 @@
 #pragma once
-#include <SDL.h>
-#include <SDL_image.h>
-#include <memory>
-#include <iostream>
 #include <random>
 
 struct Vect_2D {

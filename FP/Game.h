@@ -1,20 +1,12 @@
 #pragma once
 #include <SDL.h>
-#include <SDL_image.h>
-#include <iostream>
 #include <vector>
 #include <string>
 #include <SDL_ttf.h>
-#include <chrono>
-#include <mutex>
-#include <future>
-#include <sstream>
-#include <iomanip>
-
 #include "GameObjects.h"
-#include "CollisionDetection.h"
 #include "Timer.h"
 
+class Timer;
 
 enum class GameState {
 	kMainMenu,

@@ -1,6 +1,10 @@
-#include "CollisionDetection.h"
 #include <iostream>
 #include <cmath>
+
+#include <SDL.h>
+#include "CollisionDetection.h"
+#include "GameObjects.h"
+
 
 // Checks if circle and rectangle have collided. Returns 2 ints representing where on x and y they collided. Both will be -1, -1 if no collision.
 void CollisionDetection::detectCollision(const Circle& circle, const SDL_Rect& rectangle, int& collision_x, int& collision_y) {

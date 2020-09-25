@@ -1,3 +1,7 @@
+#include <SDL.h>
+#include <SDL_image.h>
+#include <iostream>
+
 #include "GameObjects.h"
 
 Platform::Platform(const int& x, const int& y, const int& w, const int& h) {

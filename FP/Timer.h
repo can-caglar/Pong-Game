@@ -1,10 +1,8 @@
-// Thread safe timer class
-
 #pragma once
+
+#include <future>
 #include <chrono>
 #include <mutex>
-#include <iostream>
-#include <future>
 
 using std::chrono::steady_clock;
 

@@ -1,5 +1,7 @@
 #pragma once
-#include "GameObjects.h"
+
+struct Circle;
+struct SDL_Rect;
 
 class CollisionDetection
 {
