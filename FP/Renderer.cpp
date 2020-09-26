@@ -13,18 +13,13 @@ Renderer::Renderer() {
 	_leftPlatform = std::make_unique<Platform>(7, 150, 13, 73);
 	_rightPlatform = std::make_unique<Platform>(580, 150, 13, 73);
 
+	myTextureManager = std::make_unique<TextureManager>();
+
 	init();
 }
 
 Renderer::~Renderer() {
-	for (SDL_Texture* r : _textures) {
-		SDL_DestroyTexture(r);
-	}
 
-	for (auto f : _fonts) {
-		TTF_CloseFont(f);
-		f = NULL;
-	}
 
 	SDL_DestroyRenderer(_renderer);
 	SDL_DestroyWindow(_mainWindow);
@@ -36,10 +31,6 @@ Renderer::~Renderer() {
 	IMG_Quit();
 	SDL_Quit();
 	TTF_Quit();
-}
-
-void Renderer::addTexture(SDL_Texture* t) {
-	_textures.emplace_back(t);
 }
 
 void Renderer::init() {
@@ -82,69 +73,26 @@ void Renderer::init() {
 //	Load textures from image and text
 bool Renderer::loadMedia() {
 
-	auto ball = loadTexture("Resources/ball.png");
-	auto leftP = loadTexture("Resources/plank.bmp");
-	auto rightP = loadTexture("Resources/plank2.bmp");
+	auto ball = myTextureManager->loadTexture("Resources/ball.png", _renderer);
+	auto leftP = myTextureManager->loadTexture("Resources/plank.bmp", _renderer);
+	auto rightP = myTextureManager->loadTexture("Resources/plank2.bmp", _renderer);
 
-	//myRenderer = std::make_unique<Renderer>(ball, leftP, rightP); // Create renderer
 	// Has to be in this order
-	addTexture(ball);
-	addTexture(leftP);
-	addTexture(rightP);
+	myTextureManager->addTexture(ball);
+	myTextureManager->addTexture(leftP);
+	myTextureManager->addTexture(rightP);
 
-	_fonts.push_back(TTF_OpenFont("Resources/ARLRDBD.TTF", 28));
-	if (_fonts[0] == NULL) {
-		std::cout << "Failed to load 28 ARIAL ROUNDED font. SDL_ttf error: " << TTF_GetError() << "\n";
-		return false;
-	}
+	auto f1 = myTextureManager->loadFont("Resources/ARLRDBD.TTF", 28);
+	myTextureManager->addFont(f1);
 
-	_fonts.push_back(TTF_OpenFont("Resources/ARLRDBD.TTF", 14));
-	if (_fonts[1] == NULL) {
-		std::cout << "Failed to load 14 ARIAL ROUNDED font. SDL_ttf error: " << TTF_GetError() << "\n";
-		return false;
-	}
+	auto f2 = myTextureManager->loadFont("Resources/ARLRDBD.TTF", 14);
+	myTextureManager->addFont(f2);
 
 	return true;
 }
 
-SDL_Texture* Renderer::loadTexture(std::string path) {
-	SDL_Texture* newTexture = NULL;
 
-	SDL_Surface* loadedSurface = IMG_Load(path.c_str());
-	if (loadedSurface == NULL) {
-		std::cout << "Unable to load image " << path << ". SDL_image error: " << IMG_GetError() << "\n";
-	}
-	else {
-		newTexture = SDL_CreateTextureFromSurface(_renderer, loadedSurface);
-		if (newTexture == NULL) {
-			std::cout << "Unable to create texture from " << path << ". SDL Error: " << SDL_GetError() << "\n";
-		}
-		SDL_FreeSurface(loadedSurface);
-	}
-	return newTexture;
-}
-
-SDL_Texture* Renderer::loadFromRenderedText(std::string textureText, SDL_Color textColor, TTF_Font* font) {
-
-	SDL_Texture* newTexture = NULL;
-
-	SDL_Surface* textSurface = TTF_RenderText_Blended(font, textureText.c_str(), textColor);
-	if (textSurface == NULL) {
-		std::cout << "Unable to render text surface. SDL_ttf error: " << TTF_GetError() << "\n";
-	}
-	else {
-		newTexture = SDL_CreateTextureFromSurface(_renderer, textSurface);
-		if (newTexture == NULL) {
-			std::cout << "Unable to create texture from rendered text. SDL_ttf error: " << TTF_GetError() << "\n";
-		}
-		else {
-		}
-		SDL_FreeSurface(textSurface);
-	}
-	return newTexture;
-}
-
-void Renderer::renderText(SDL_Texture* tt, int xpos, int ypos) {
+void Renderer::renderThis(SDL_Texture* tt, int xpos, int ypos) {
 
 	if (tt == NULL) return;
 
@@ -166,19 +114,19 @@ void Renderer::render() {
 	//TODO width/height query of texture doesn't have to happen every loop!
 
 	//BALL
-	SDL_QueryTexture(_textures[kBall], NULL, NULL, &width, &height);
+	SDL_QueryTexture(myTextureManager->_textures[kBall], NULL, NULL, &width, &height);
 	SDL_Rect positionRect = { _ball->curX(), _ball->curY(), width, height };
-	SDL_RenderCopy(_renderer, _textures[kBall], NULL, &positionRect);
+	SDL_RenderCopy(_renderer, myTextureManager->_textures[kBall], NULL, &positionRect);
 
 	// LEFT PLATFORM
-	SDL_QueryTexture(_textures[kLeftPlatform], NULL, NULL, &width, &height);
+	SDL_QueryTexture(myTextureManager->_textures[kLeftPlatform], NULL, NULL, &width, &height);
 	positionRect = { _leftPlatform->curX(), _leftPlatform->curY(), width, height };
-	SDL_RenderCopy(_renderer, _textures[kLeftPlatform], NULL, &positionRect);
+	SDL_RenderCopy(_renderer, myTextureManager->_textures[kLeftPlatform], NULL, &positionRect);
 
 	// RIGHT PLATFORM
-	SDL_QueryTexture(_textures[kRightPlatform], NULL, NULL, &width, &height);
+	SDL_QueryTexture(myTextureManager->_textures[kRightPlatform], NULL, NULL, &width, &height);
 	positionRect = { _rightPlatform->curX(), _rightPlatform->curY(), width, height };
-	SDL_RenderCopy(_renderer, _textures[kRightPlatform], NULL, &positionRect);
+	SDL_RenderCopy(_renderer, myTextureManager->_textures[kRightPlatform], NULL, &positionRect);
 
 	SDL_RenderPresent(_renderer);
 }
