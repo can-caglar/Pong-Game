@@ -1,0 +1,314 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="14.3.0">
+  <zoom_level>6</zoom_level>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>222</x>
+      <y>222</y>
+      <w>306</w>
+      <h>384</h>
+    </coordinates>
+    <panel_attributes>Game
+--
+
+Attributes
+-_running : bool
+- _frames : int
+-	_timeAtLaunch: uint32_t
+-	_threadSafeTimer : Timer
+-	std::vector&lt;int&gt; _scoresVector;
+-	_state : GameState
+-	_gameStarted : bool 
+-	_mainWindow : SDL_Window*
+-	SDL_Renderer* _renderer;
+-	GAME_WIDTH = 600 : const int
+-	GAME_HEIGHT = 400 : const int 
+-	_ball : std::unique_ptr&lt;Ball&gt;
+-	_leftPlatform : std::unique_ptr&lt;Platform&gt;
+-	_rightPlatform : std::unique_ptr&lt;Platform&gt;
+-	std::vector&lt;TTF_Font*&gt; _fonts;		// global font
+
+Methods
+-	void renderText(SDL_Texture* text_texture, int xpos, int ypos);
+-	void updateScoreTextTure();
+-	SDL_Texture* _countdownTimer;
+-	SDL_Texture* _scoresTexture;
+-	SDL_Texture* _controlsTexture;
+-	SDL_Texture* loadTexture(std::string path);
+-	bool loadMedia();
+-	SDL_Texture* loadFromRenderedText(std::string textureTex, SDL_Color textColor, TTF_Font* font);
+-	void checkAndReactToBallCollisions(int&amp; winner);
+-	void checkAndReactToPlatformCollisions();
+-	bool init();
+-	void onEvents(SDL_Event* event);
+-	void gameLoop();
+-	void render();
+-	void cleanUp();
+-	void start();
+--
++int execute(); // Launch game</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>36</x>
+      <y>384</y>
+      <w>114</w>
+      <h>108</h>
+    </coordinates>
+    <panel_attributes>Timer
+--
+- std::mutex mtx;
+- std::future&lt;void&gt; _ftr;
+-	bool _isRunning;
+-	bool _completed;
+- delay(milliseconds)
+--
++ bool isRunning()
++	bool isCompleted()
++	bool start()</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>834</x>
+      <y>264</y>
+      <w>324</w>
+      <h>252</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;interface&gt;&gt;
+/GameObjects/
+--
+--
+#Vect_2D _velocity;
+#int _speed;
+#int _curX;
+#int _curY;
+#SDL_Texture* _texture;
+#T _boundingBox;
+--
+
+Accessors
++Vect_2D velocity() { return _velocity; }
++	int curX() { return _curX; }
++	int curY() { return _curY; }
++	T boundingBox() { return _boundingBox;  }
++	SDL_Texture* getTexture() { return _texture;  }
+
+Modifiers
++	void setTexture(SDL_Texture* t) { _texture = t; }
++	void setVelocity(Vect_2D v) { _velocity = v;  }
++	void setSpeed(int s) { _speed = s;  }
++	void curX(int n)
++	void curY(int n)
+
+Special functions
++virtual void render(SDL_Renderer* renderer) = 0;
++void move();
++void updateBoundingBox();</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>252</x>
+      <y>702</y>
+      <w>126</w>
+      <h>126</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;Utility&gt;&gt;
+CollisionDetection
+--
+--
+_+static square_of_distance(int x1, int y1, int x2, int y2);_
+_+static detectCollision(const Circle&amp; item1, const SDL_Rect&amp; item2, int&amp; collisionX, int&amp; collisionY);_
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>882</x>
+      <y>174</y>
+      <w>66</w>
+      <h>48</h>
+    </coordinates>
+    <panel_attributes>Vect_2D
+--
+--
++ int x
++ int y</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>648</x>
+      <y>216</y>
+      <w>48</w>
+      <h>48</h>
+    </coordinates>
+    <panel_attributes>Circle
+--
+--
++int x
++int y
++int r</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>78</x>
+      <y>252</y>
+      <w>72</w>
+      <h>72</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;enumeration&gt;&gt;
+State
+--
+kMainMenu
+kPreStart
+kStart
+kScoreScreen</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>612</x>
+      <y>474</y>
+      <w>150</w>
+      <h>90</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;SDL_Rect&gt;&gt;
+Platform
+--
+--
++ moveUp() : void
++ moveDown() : void
++ stop() : void
++ render(r: SDL_Renderer*): void</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>606</x>
+      <y>312</y>
+      <w>162</w>
+      <h>90</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;Circle&gt;&gt;
+Ball
+--
+- _mt : std::mt19937
+- _rdevice : std::random-device
+--
++ setRandomVelocity() : void
++ render(r: SDL_Renderer*): void</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>750</x>
+      <y>378</y>
+      <w>96</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;.</panel_attributes>
+    <additional_attributes>140.0;30.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>750</x>
+      <y>486</y>
+      <w>96</w>
+      <h>36</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;.</panel_attributes>
+    <additional_attributes>140.0;10.0;10.0;40.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>906</x>
+      <y>216</y>
+      <w>18</w>
+      <h>60</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;80.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>672</x>
+      <y>258</y>
+      <w>18</w>
+      <h>66</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;90.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>144</x>
+      <y>432</y>
+      <w>90</w>
+      <h>18</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>130.0;10.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>516</x>
+      <y>366</y>
+      <w>102</w>
+      <h>18</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;150.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>516</x>
+      <y>516</y>
+      <w>108</w>
+      <h>18</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;160.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>336</x>
+      <y>594</y>
+      <w>24</w>
+      <h>126</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-</panel_attributes>
+    <additional_attributes>10.0;190.0;20.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>138</x>
+      <y>270</y>
+      <w>96</w>
+      <h>24</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-</panel_attributes>
+    <additional_attributes>10.0;20.0;140.0;10.0</additional_attributes>
+  </element>
+</diagram>
