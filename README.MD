@@ -1,6 +1,6 @@
 # Pong Game Project
 
-*Version 1.0.0*
+*Version 1.1.0*
 
 A classic game of Pong implemented using the SDL2 library. 
 
