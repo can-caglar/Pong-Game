@@ -9,15 +9,6 @@ template <typename T>
 class GameObjects{
 
 public:
-	//// Constructors
-	//GameObjects() = default;
-	//GameObjects(GameObjects & other) = delete;
-	//GameObjects& operator=(GameObjects & other) = delete;
-	//GameObjects(GameObjects && other) = delete;
-	//GameObjects& operator=(GameObjects && other) = delete;
-
-	//// Destructor
-	//~GameObjects() {}
 
 	// Accessors
 	Vect_2D velocity() { return _velocity; }

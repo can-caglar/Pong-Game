@@ -37,8 +37,7 @@ private:
 	GameState _state;
 	bool _gameStarted;
 
-	SDL_Window* _mainWindow;
-	SDL_Renderer* _renderer;
+	//SDL_Window* _mainWindow;
 
 	//const int GAME_WIDTH = 600;
 	//const int GAME_HEIGHT = 400;
@@ -49,17 +48,17 @@ private:
 
 	std::unique_ptr<Renderer> myRenderer; //todo change name
 
-	std::vector<TTF_Font*> _fonts;		// global font
-	void renderText(SDL_Texture* text_texture, int xpos, int ypos);
-	void updateScoreTextTure();
+	//std::vector<TTF_Font*> _fonts;		// global font
+	//void renderText(SDL_Texture* text_texture, int xpos, int ypos);
+	//void updateScoreTextTure();
 
 	SDL_Texture* _countdownTimer;
 	SDL_Texture* _scoresTexture;
 	SDL_Texture* _controlsTexture;
 
-	SDL_Texture* loadTexture(std::string path);
-	bool loadMedia();
-	SDL_Texture* loadFromRenderedText(std::string textureTex, SDL_Color textColor, TTF_Font* font);
+	//SDL_Texture* loadTexture(std::string path);
+	//bool loadMedia();
+	//SDL_Texture* loadFromRenderedText(std::string textureTex, SDL_Color textColor, TTF_Font* font);
 
 	void checkAndReactToBallCollisions(int& winner);
 	void checkAndReactToPlatformCollisions();
