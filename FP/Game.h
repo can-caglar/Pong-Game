@@ -5,12 +5,10 @@
 #include <SDL_ttf.h>
 
 #include "GameObjects.h"
-#include "Timer.h"
 
 #include "Ball.h"
 #include "Platform.h"
-
-class Timer;
+#include "Timer.h"
 
 enum class GameState {
 	kMainMenu,

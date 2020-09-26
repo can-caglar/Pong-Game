@@ -1,6 +1,8 @@
 #pragma once
 #include "GameObjects.h"
 
+struct Circle;
+
 class Ball : public GameObjects<Circle> {
 
 public:

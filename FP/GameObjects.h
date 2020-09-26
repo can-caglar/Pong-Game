@@ -3,18 +3,7 @@
 #include <SDL_image.h>
 #include <random>
 
-struct Vect_2D {
-
-	int x;
-	int y;
-};
-
-struct Circle {
-
-	int x;
-	int y;
-	int r;
-};
+#include "Shapes.h"
 
 template <typename T>
 class GameObjects{

@@ -5,6 +5,7 @@
 
 #include "Game.h"
 #include "CollisionDetection.h"
+#include "Shapes.h"
 
 using std::cout;
 using std::endl;
