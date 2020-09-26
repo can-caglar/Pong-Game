@@ -38,11 +38,11 @@ void Ball::setRandomVelocity() {
 
 }
 
-void Ball::render(SDL_Renderer* renderer) {
-	SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0XFF, 0XFF);
-
-	SDL_Rect newPos = { _curX, _curY, 15, 15 };
-	SDL_RenderCopy(renderer, _texture, NULL, &newPos);
-
-	//SDL_RenderPresent(renderer);
-}
+//void Ball::render(SDL_Renderer* renderer) {
+//	SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0XFF, 0XFF);
+//
+//	SDL_Rect newPos = { _curX, _curY, 15, 15 };
+//	SDL_RenderCopy(renderer, _texture, NULL, &newPos);
+//
+//	//SDL_RenderPresent(renderer);
+//}

@@ -10,6 +10,8 @@
 #include "Platform.h"
 #include "Timer.h"
 
+#include "Renderer.h"
+
 enum class GameState {
 	kMainMenu,
 	kPreStart,
@@ -38,12 +40,14 @@ private:
 	SDL_Window* _mainWindow;
 	SDL_Renderer* _renderer;
 
-	const int GAME_WIDTH = 600;
-	const int GAME_HEIGHT = 400;
+	//const int GAME_WIDTH = 600;
+	//const int GAME_HEIGHT = 400;
 
-	std::unique_ptr<Ball> _ball;
-	std::unique_ptr<Platform> _leftPlatform;
-	std::unique_ptr<Platform> _rightPlatform;
+	//std::unique_ptr<Ball> _ball;
+	//std::unique_ptr<Platform> _leftPlatform;
+	//std::unique_ptr<Platform> _rightPlatform;
+
+	std::unique_ptr<Renderer> myRenderer; //todo change name
 
 	std::vector<TTF_Font*> _fonts;		// global font
 	void renderText(SDL_Texture* text_texture, int xpos, int ypos);

@@ -11,7 +11,7 @@ public:
 
 	// Functions
 	void setRandomVelocity();
-	void render(SDL_Renderer* renderer) override;
+	//void render(SDL_Renderer* renderer) override;
 
 private:
 	std::mt19937 _mt;

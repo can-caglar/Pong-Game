@@ -18,14 +18,14 @@ Platform::Platform(const int& x, const int& y, const int& w, const int& h) {
 }
 
 
-void Platform::render(SDL_Renderer* renderer) {
-	SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0XFF, 0XFF);
-
-	SDL_Rect newPos = { _curX, _curY, 13, 73 };
-	SDL_RenderCopy(renderer, _texture, NULL, &newPos);
-
-	//SDL_RenderPresent(renderer);
-}
+//void Platform::render(SDL_Renderer* renderer) {
+//	SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0XFF, 0XFF);
+//
+//	SDL_Rect newPos = { _curX, _curY, 13, 73 };
+//	SDL_RenderCopy(renderer, _texture, NULL, &newPos);
+//
+//	//SDL_RenderPresent(renderer);
+//}
 
 void Platform::moveUp() {
 	setVelocity(Vect_2D{ 0, -_speed });

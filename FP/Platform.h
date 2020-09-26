@@ -10,5 +10,5 @@ public:
 	void moveUp();
 	void moveDown();
 	void stop();
-	void render(SDL_Renderer* renderer) override;
+	//void render(SDL_Renderer* renderer) override;
 };

@@ -6,6 +6,7 @@
 #include "Game.h"
 #include "CollisionDetection.h"
 #include "Shapes.h"
+#include "Renderer.h"
 
 using std::cout;
 using std::endl;
@@ -16,9 +17,11 @@ Game::Game() {
 	_state = GameState::kMainMenu;
 	_scoresVector = { 0, 0 };
 
-	_ball = std::make_unique<Ball>(GAME_WIDTH / 2, GAME_HEIGHT / 2, 8);
+	/*_ball = std::make_unique<Ball>(GAME_WIDTH / 2, GAME_HEIGHT / 2, 8);
 	_leftPlatform = std::make_unique<Platform>(7, 150, 13, 73);
-	_rightPlatform = std::make_unique<Platform>(580, 150, 13, 73);
+	_rightPlatform = std::make_unique<Platform>(580, 150, 13, 73);*/
+
+	myRenderer = std::make_unique<Renderer>();
 
 	_running = true;
 	_gameStarted = false;
@@ -55,7 +58,7 @@ bool Game::init() {
 
 	// Create Window
 	if ((_mainWindow = SDL_CreateWindow("Pong by Can", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-		GAME_WIDTH, GAME_HEIGHT, SDL_WINDOW_SHOWN)) == NULL) {
+		myRenderer->GAME_WIDTH, myRenderer->GAME_HEIGHT, SDL_WINDOW_SHOWN)) == NULL) {
 		return false;
 	}
 
@@ -92,9 +95,15 @@ bool Game::init() {
 //	Load textures from image and text
 bool Game::loadMedia() {
 	
-	_ball->setTexture(loadTexture("Resources/ball.png"));
-	_leftPlatform->setTexture(loadTexture("Resources/plank.bmp"));
-	_rightPlatform->setTexture(loadTexture("Resources/plank2.bmp"));
+	auto ball =loadTexture("Resources/ball.png");
+	auto leftP = loadTexture("Resources/plank.bmp");
+	auto rightP = loadTexture("Resources/plank2.bmp");
+
+	//myRenderer = std::make_unique<Renderer>(ball, leftP, rightP); // Create renderer
+	// Has to be in this order
+	myRenderer->addTexture(ball);
+	myRenderer->addTexture(leftP);
+	myRenderer->addTexture(rightP);
 
 	_fonts.push_back(TTF_OpenFont("Resources/ARLRDBD.TTF", 28));
 	if (_fonts[0] == NULL) {
@@ -156,16 +165,16 @@ void Game::onEvents(SDL_Event* event) {
 		switch (event->key.keysym.sym)
 		{
 		case SDLK_UP:
-			_rightPlatform->moveUp();
+			myRenderer->_rightPlatform->moveUp();
 			break;
 		case SDLK_DOWN:
-			_rightPlatform->moveDown();
+			myRenderer->_rightPlatform->moveDown();
 			break;
 		case SDLK_w:
-			_leftPlatform->moveUp();
+			myRenderer->_leftPlatform->moveUp();
 			break;
 		case SDLK_s:
-			_leftPlatform->moveDown();
+			myRenderer->_leftPlatform->moveDown();
 			break;
 		case SDLK_SPACE:
 			if (_state == GameState::kScoreScreen || _state == GameState::kMainMenu) _state = GameState::kPreStart;
@@ -178,16 +187,16 @@ void Game::onEvents(SDL_Event* event) {
 		switch (event->key.keysym.sym)
 		{
 		case SDLK_UP:
-			_rightPlatform->stop();
+			myRenderer->_rightPlatform->stop();
 			break;
 		case SDLK_DOWN:
-			_rightPlatform->stop();
+			myRenderer->_rightPlatform->stop();
 			break;
 		case SDLK_w:
-			_leftPlatform->stop();
+			myRenderer->_leftPlatform->stop();
 			break;
 		case SDLK_s:
-			_leftPlatform->stop();
+			myRenderer->_leftPlatform->stop();
 			break;
 		default:
 			break;
@@ -248,23 +257,23 @@ void bounceBall(int x, int y, Platform* platform, Ball* ball) {
 
 void Game::checkAndReactToPlatformCollisions() {
 	// Left platform on boundary
-	if (_leftPlatform->curY() < 0) {
-		_leftPlatform->curY(0);
-		_leftPlatform->stop();
+	if (myRenderer->_leftPlatform->curY() < 0) {
+		myRenderer->_leftPlatform->curY(0);
+		myRenderer->_leftPlatform->stop();
 	}
-	if ((_leftPlatform->curY() + _leftPlatform->boundingBox().h) > (GAME_HEIGHT)) {
-		_leftPlatform->curY(GAME_HEIGHT - _leftPlatform->boundingBox().h);
-		_leftPlatform->stop();
+	if ((myRenderer->_leftPlatform->curY() + myRenderer->_leftPlatform->boundingBox().h) > (myRenderer->GAME_HEIGHT)) {
+		myRenderer->_leftPlatform->curY(myRenderer->GAME_HEIGHT - myRenderer->_leftPlatform->boundingBox().h);
+		myRenderer->_leftPlatform->stop();
 	}
 
 	// Right platform on boundary
-	if (_rightPlatform->curY() < 0) {
-		_rightPlatform->curY(0);
-		_rightPlatform->stop();
+	if (myRenderer->_rightPlatform->curY() < 0) {
+		myRenderer->_rightPlatform->curY(0);
+		myRenderer->_rightPlatform->stop();
 	}
-	if ((_rightPlatform->curY() + _rightPlatform->boundingBox().h) > (GAME_HEIGHT)) {
-		_rightPlatform->curY(GAME_HEIGHT - _rightPlatform->boundingBox().h);
-		_rightPlatform->stop();
+	if ((myRenderer->_rightPlatform->curY() + myRenderer->_rightPlatform->boundingBox().h) > (myRenderer->GAME_HEIGHT)) {
+		myRenderer->_rightPlatform->curY(myRenderer->GAME_HEIGHT - myRenderer->_rightPlatform->boundingBox().h);
+		myRenderer->_rightPlatform->stop();
 	}
 
 }
@@ -274,10 +283,10 @@ void Game::checkAndReactToBallCollisions(int& winner) {
 	winner = -1;
 
 	// Ball on boundary
-	int ballDiameter = 2 * _ball->boundingBox().r;
+	int ballDiameter = 2 * myRenderer->_ball->boundingBox().r;
 
 	//LEFT
-	if (_ball->curX() < 0) {						// PLAYER 2 WINS
+	if (myRenderer->_ball->curX() < 0) {						// PLAYER 2 WINS
 		/*_scoresVector[1]++;
 		_ball->setVelocity({ 0, 0 });
 		_state = GameState::kScoreScreen;
@@ -285,7 +294,7 @@ void Game::checkAndReactToBallCollisions(int& winner) {
 		winner = 1;
 	}
 	//RIGHT
-	else if (_ball->curX() > GAME_WIDTH - ballDiameter) { // PLAYER 1 WINS
+	else if (myRenderer->_ball->curX() > myRenderer->GAME_WIDTH - ballDiameter) { // PLAYER 1 WINS
 		/*_scoresVector[0]++;
 		_ball->setVelocity({ 0, 0 });
 		_state = GameState::kScoreScreen;
@@ -293,34 +302,34 @@ void Game::checkAndReactToBallCollisions(int& winner) {
 		winner = 0;
 	}
 	//TOP
-	else if (_ball->curY() < 0) {
-		int yVel = _ball->velocity().y;
-		int xVel = _ball->velocity().x;
+	else if (myRenderer->_ball->curY() < 0) {
+		int yVel = myRenderer->_ball->velocity().y;
+		int xVel = myRenderer->_ball->velocity().x;
 
-		_ball->setVelocity({ xVel, -yVel });
-		_ball->curY(0);
+		myRenderer->_ball->setVelocity({ xVel, -yVel });
+		myRenderer->_ball->curY(0);
 	}
 	//BOTTOM
-	else if (_ball->curY() > GAME_HEIGHT - ballDiameter) {
+	else if (myRenderer->_ball->curY() > myRenderer->GAME_HEIGHT - ballDiameter) {
 
-		int yVel = _ball->velocity().y;
-		int xVel = _ball->velocity().x;
+		int yVel = myRenderer->_ball->velocity().y;
+		int xVel = myRenderer->_ball->velocity().x;
 
-		_ball->setVelocity({ xVel, -yVel });
-		_ball->curY(GAME_HEIGHT - ballDiameter);
+		myRenderer->_ball->setVelocity({ xVel, -yVel });
+		myRenderer->_ball->curY(myRenderer->GAME_HEIGHT - ballDiameter);
 	}
 
 	// Ball collision on platforms
 	int x = -1;
 	int y = -1;
-	CollisionDetection::detectCollision(_ball->boundingBox(), _leftPlatform->boundingBox(), x, y);
+	CollisionDetection::detectCollision(myRenderer->_ball->boundingBox(), myRenderer->_leftPlatform->boundingBox(), x, y);
 	if (x != -1 && y != -1) {
-		bounceBall(x, y, _leftPlatform.get(), _ball.get());
+		bounceBall(x, y, myRenderer->_leftPlatform.get(), myRenderer->_ball.get());
 	}
 
-	CollisionDetection::detectCollision(_ball->boundingBox(), _rightPlatform->boundingBox(), x, y);
+	CollisionDetection::detectCollision(myRenderer->_ball->boundingBox(), myRenderer->_rightPlatform->boundingBox(), x, y);
 	if (x != -1 && y != -1) {
-		bounceBall(x, y, _rightPlatform.get(), _ball.get());
+		bounceBall(x, y, myRenderer->_rightPlatform.get(), myRenderer->_ball.get());
 	}
 }
 
@@ -332,30 +341,30 @@ void Game::gameLoop() {
 	{
 		case GameState::kMainMenu:{
 			_scoresVector = { 0, 0 };
-			_leftPlatform->move();
-			_rightPlatform->move();
+			myRenderer->_leftPlatform->move();
+			myRenderer->_rightPlatform->move();
 			checkAndReactToPlatformCollisions();
 
 		}break;
 		case GameState::kPreStart:{
 			_gameStarted = false;
-			_ball->setVelocity({ 0,0 });
-			_ball->curX(GAME_WIDTH / 2);
-			_ball->curY(GAME_HEIGHT / 2);
+			myRenderer->_ball->setVelocity({ 0,0 });
+			myRenderer->_ball->curX(myRenderer->GAME_WIDTH / 2);
+			myRenderer->_ball->curY(myRenderer->GAME_HEIGHT / 2);
 			_threadSafeTimer.start(std::chrono::milliseconds(1500));
 			_state = GameState::kStart;
 
 		}break;
 		case GameState::kStart:{
 			if (_threadSafeTimer.isCompleted() == true && _gameStarted == false) {
-				_ball->setRandomVelocity();
+				myRenderer->_ball->setRandomVelocity();
 				_gameStarted = true;
 			}
 
-			_leftPlatform->move();
-			_rightPlatform->move();
+			myRenderer->_leftPlatform->move();
+			myRenderer->_rightPlatform->move();
 			checkAndReactToPlatformCollisions();
-			_ball->move();
+			myRenderer->_ball->move();
 			checkAndReactToBallCollisions(winner);
 
 			if (winner != -1) {
@@ -424,7 +433,7 @@ void Game::render() {
 
 		_countdownTimer = loadFromRenderedText("Press SPACE to Start", white, _fonts[0]);
 		SDL_QueryTexture(_countdownTimer, NULL, NULL, &w, NULL);
-		renderText(_countdownTimer, GAME_WIDTH / 2 - (w / 2), 350);
+		renderText(_countdownTimer, myRenderer->GAME_WIDTH / 2 - (w / 2), 350);
 
 		updateScoreTextTure();
 	}
@@ -432,16 +441,17 @@ void Game::render() {
 		updateScoreTextTure();
 		_countdownTimer = loadFromRenderedText("Press SPACE to re-match", white, _fonts[1]);
 		SDL_QueryTexture(_countdownTimer, NULL, NULL, &w, NULL);
-		renderText(_countdownTimer, GAME_WIDTH / 2 - (w / 2), 350);
+		renderText(_countdownTimer, myRenderer->GAME_WIDTH / 2 - (w / 2), 350);
 	}
 
-	_leftPlatform->render(_renderer);
-	_rightPlatform->render(_renderer);
-	_ball->render(_renderer);
+	//_leftPlatform->render(_renderer);
+	//_rightPlatform->render(_renderer);
+	//_ball->render(_renderer);
+	myRenderer->render(_renderer);
 
 	// Render scores
 	SDL_QueryTexture(_scoresTexture, NULL, NULL, &w, NULL);
-	renderText(_scoresTexture, GAME_WIDTH/2 - (w/2), 20);
+	renderText(_scoresTexture, myRenderer->GAME_WIDTH/2 - (w/2), 20);
 
 	SDL_SetRenderDrawColor(_renderer, 0x30, 0x30, 0x30, 0xFF);
 	SDL_RenderPresent(_renderer);

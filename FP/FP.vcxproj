@@ -25,6 +25,7 @@
     <ClCompile Include="GameObjects.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Platform.cpp" />
+    <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="Timer.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -33,6 +34,7 @@
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameObjects.h" />
     <ClInclude Include="Platform.h" />
+    <ClInclude Include="Renderer.h" />
     <ClInclude Include="Shapes.h" />
     <ClInclude Include="Timer.h" />
   </ItemGroup>
