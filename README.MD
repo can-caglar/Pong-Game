@@ -51,6 +51,8 @@ Press SPACE to start the game.
 
 ## File Class Structure
 
+* INCORRECT SINCE V1.1.0 but leaving here for reference *
+
 <img src="images/pong_class_diagram.png"/>
 
 ## Rubric points addressed
