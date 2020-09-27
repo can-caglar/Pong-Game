@@ -8,6 +8,7 @@
 #include "Shapes.h"
 #include "Renderer.h"
 
+
 using std::cout;
 using std::endl;
 
@@ -21,7 +22,8 @@ Game::Game() {
 	_leftPlatform = std::make_unique<Platform>(7, 150, 13, 73);
 	_rightPlatform = std::make_unique<Platform>(580, 150, 13, 73);*/
 
-	myRenderer = std::make_unique<Renderer>();
+	//myRenderer = std::make_unique<Renderer>();
+	mySceneManager = std::make_unique<SceneManager>();
 
 	_running = true;
 	_gameStarted = false;
@@ -64,16 +66,16 @@ void Game::onEvents(SDL_Event* event) {
 		switch (event->key.keysym.sym)
 		{
 		case SDLK_UP:
-			myRenderer->_rightPlatform->moveUp();
+			mySceneManager->myRenderer->_rightPlatform->moveUp();
 			break;
 		case SDLK_DOWN:
-			myRenderer->_rightPlatform->moveDown();
+			mySceneManager->myRenderer->_rightPlatform->moveDown();
 			break;
 		case SDLK_w:
-			myRenderer->_leftPlatform->moveUp();
+			mySceneManager->myRenderer->_leftPlatform->moveUp();
 			break;
 		case SDLK_s:
-			myRenderer->_leftPlatform->moveDown();
+			mySceneManager->myRenderer->_leftPlatform->moveDown();
 			break;
 		case SDLK_SPACE:
 			if (_state == GameState::kScoreScreen || _state == GameState::kMainMenu) _state = GameState::kPreStart;
@@ -86,16 +88,16 @@ void Game::onEvents(SDL_Event* event) {
 		switch (event->key.keysym.sym)
 		{
 		case SDLK_UP:
-			myRenderer->_rightPlatform->stop();
+			mySceneManager->myRenderer->_rightPlatform->stop();
 			break;
 		case SDLK_DOWN:
-			myRenderer->_rightPlatform->stop();
+			mySceneManager->myRenderer->_rightPlatform->stop();
 			break;
 		case SDLK_w:
-			myRenderer->_leftPlatform->stop();
+			mySceneManager->myRenderer->_leftPlatform->stop();
 			break;
 		case SDLK_s:
-			myRenderer->_leftPlatform->stop();
+			mySceneManager->myRenderer->_leftPlatform->stop();
 			break;
 		default:
 			break;
@@ -156,23 +158,23 @@ void bounceBall(int x, int y, Platform* platform, Ball* ball) {
 
 void Game::checkAndReactToPlatformCollisions() {
 	// Left platform on boundary
-	if (myRenderer->_leftPlatform->curY() < 0) {
-		myRenderer->_leftPlatform->curY(0);
-		myRenderer->_leftPlatform->stop();
+	if (mySceneManager->myRenderer->_leftPlatform->curY() < 0) {
+		mySceneManager->myRenderer->_leftPlatform->curY(0);
+		mySceneManager->myRenderer->_leftPlatform->stop();
 	}
-	if ((myRenderer->_leftPlatform->curY() + myRenderer->_leftPlatform->boundingBox().h) > (myRenderer->GAME_HEIGHT)) {
-		myRenderer->_leftPlatform->curY(myRenderer->GAME_HEIGHT - myRenderer->_leftPlatform->boundingBox().h);
-		myRenderer->_leftPlatform->stop();
+	if ((mySceneManager->myRenderer->_leftPlatform->curY() + mySceneManager->myRenderer->_leftPlatform->boundingBox().h) > (mySceneManager->myRenderer->GAME_HEIGHT)) {
+		mySceneManager->myRenderer->_leftPlatform->curY(mySceneManager->myRenderer->GAME_HEIGHT - mySceneManager->myRenderer->_leftPlatform->boundingBox().h);
+		mySceneManager->myRenderer->_leftPlatform->stop();
 	}
 
 	// Right platform on boundary
-	if (myRenderer->_rightPlatform->curY() < 0) {
-		myRenderer->_rightPlatform->curY(0);
-		myRenderer->_rightPlatform->stop();
+	if (mySceneManager->myRenderer->_rightPlatform->curY() < 0) {
+		mySceneManager->myRenderer->_rightPlatform->curY(0);
+		mySceneManager->myRenderer->_rightPlatform->stop();
 	}
-	if ((myRenderer->_rightPlatform->curY() + myRenderer->_rightPlatform->boundingBox().h) > (myRenderer->GAME_HEIGHT)) {
-		myRenderer->_rightPlatform->curY(myRenderer->GAME_HEIGHT - myRenderer->_rightPlatform->boundingBox().h);
-		myRenderer->_rightPlatform->stop();
+	if ((mySceneManager->myRenderer->_rightPlatform->curY() + mySceneManager->myRenderer->_rightPlatform->boundingBox().h) > (mySceneManager->myRenderer->GAME_HEIGHT)) {
+		mySceneManager->myRenderer->_rightPlatform->curY(mySceneManager->myRenderer->GAME_HEIGHT - mySceneManager->myRenderer->_rightPlatform->boundingBox().h);
+		mySceneManager->myRenderer->_rightPlatform->stop();
 	}
 
 }
@@ -182,10 +184,10 @@ void Game::checkAndReactToBallCollisions(int& winner) {
 	winner = -1;
 
 	// Ball on boundary
-	int ballDiameter = 2 * myRenderer->_ball->boundingBox().r;
+	int ballDiameter = 2 * mySceneManager->myRenderer->_ball->boundingBox().r;
 
 	//LEFT
-	if (myRenderer->_ball->curX() < 0) {						// PLAYER 2 WINS
+	if (mySceneManager->myRenderer->_ball->curX() < 0) {						// PLAYER 2 WINS
 		/*_scoresVector[1]++;
 		_ball->setVelocity({ 0, 0 });
 		_state = GameState::kScoreScreen;
@@ -193,7 +195,7 @@ void Game::checkAndReactToBallCollisions(int& winner) {
 		winner = 1;
 	}
 	//RIGHT
-	else if (myRenderer->_ball->curX() > myRenderer->GAME_WIDTH - ballDiameter) { // PLAYER 1 WINS
+	else if (mySceneManager->myRenderer->_ball->curX() > mySceneManager->myRenderer->GAME_WIDTH - ballDiameter) { // PLAYER 1 WINS
 		/*_scoresVector[0]++;
 		_ball->setVelocity({ 0, 0 });
 		_state = GameState::kScoreScreen;
@@ -201,34 +203,34 @@ void Game::checkAndReactToBallCollisions(int& winner) {
 		winner = 0;
 	}
 	//TOP
-	else if (myRenderer->_ball->curY() < 0) {
-		int yVel = myRenderer->_ball->velocity().y;
-		int xVel = myRenderer->_ball->velocity().x;
+	else if (mySceneManager->myRenderer->_ball->curY() < 0) {
+		int yVel = mySceneManager->myRenderer->_ball->velocity().y;
+		int xVel = mySceneManager->myRenderer->_ball->velocity().x;
 
-		myRenderer->_ball->setVelocity({ xVel, -yVel });
-		myRenderer->_ball->curY(0);
+		mySceneManager->myRenderer->_ball->setVelocity({ xVel, -yVel });
+		mySceneManager->myRenderer->_ball->curY(0);
 	}
 	//BOTTOM
-	else if (myRenderer->_ball->curY() > myRenderer->GAME_HEIGHT - ballDiameter) {
+	else if (mySceneManager->myRenderer->_ball->curY() > mySceneManager->myRenderer->GAME_HEIGHT - ballDiameter) {
 
-		int yVel = myRenderer->_ball->velocity().y;
-		int xVel = myRenderer->_ball->velocity().x;
+		int yVel = mySceneManager->myRenderer->_ball->velocity().y;
+		int xVel = mySceneManager->myRenderer->_ball->velocity().x;
 
-		myRenderer->_ball->setVelocity({ xVel, -yVel });
-		myRenderer->_ball->curY(myRenderer->GAME_HEIGHT - ballDiameter);
+		mySceneManager->myRenderer->_ball->setVelocity({ xVel, -yVel });
+		mySceneManager->myRenderer->_ball->curY(mySceneManager->myRenderer->GAME_HEIGHT - ballDiameter);
 	}
 
 	// Ball collision on platforms
 	int x = -1;
 	int y = -1;
-	CollisionDetection::detectCollision(myRenderer->_ball->boundingBox(), myRenderer->_leftPlatform->boundingBox(), x, y);
+	CollisionDetection::detectCollision(mySceneManager->myRenderer->_ball->boundingBox(), mySceneManager->myRenderer->_leftPlatform->boundingBox(), x, y);
 	if (x != -1 && y != -1) {
-		bounceBall(x, y, myRenderer->_leftPlatform.get(), myRenderer->_ball.get());
+		bounceBall(x, y, mySceneManager->myRenderer->_leftPlatform.get(), mySceneManager->myRenderer->_ball.get());
 	}
 
-	CollisionDetection::detectCollision(myRenderer->_ball->boundingBox(), myRenderer->_rightPlatform->boundingBox(), x, y);
+	CollisionDetection::detectCollision(mySceneManager->myRenderer->_ball->boundingBox(), mySceneManager->myRenderer->_rightPlatform->boundingBox(), x, y);
 	if (x != -1 && y != -1) {
-		bounceBall(x, y, myRenderer->_rightPlatform.get(), myRenderer->_ball.get());
+		bounceBall(x, y, mySceneManager->myRenderer->_rightPlatform.get(), mySceneManager->myRenderer->_ball.get());
 	}
 }
 
@@ -240,30 +242,30 @@ void Game::gameLoop() {
 	{
 		case GameState::kMainMenu:{
 			_scoresVector = { 0, 0 };
-			myRenderer->_leftPlatform->move();
-			myRenderer->_rightPlatform->move();
+			mySceneManager->myRenderer->_leftPlatform->move();
+			mySceneManager->myRenderer->_rightPlatform->move();
 			checkAndReactToPlatformCollisions();
 
 		}break;
 		case GameState::kPreStart:{
 			_gameStarted = false;
-			myRenderer->_ball->setVelocity({ 0,0 });
-			myRenderer->_ball->curX(myRenderer->GAME_WIDTH / 2);
-			myRenderer->_ball->curY(myRenderer->GAME_HEIGHT / 2);
-			_threadSafeTimer.start(std::chrono::milliseconds(1500));
+			mySceneManager->myRenderer->_ball->setVelocity({ 0,0 });
+			mySceneManager->myRenderer->_ball->curX(mySceneManager->myRenderer->GAME_WIDTH / 2);
+			mySceneManager->myRenderer->_ball->curY(mySceneManager->myRenderer->GAME_HEIGHT / 2);
+			mySceneManager->_threadSafeTimer.start(std::chrono::milliseconds(1500));
 			_state = GameState::kStart;
 
 		}break;
 		case GameState::kStart:{
-			if (_threadSafeTimer.isCompleted() == true && _gameStarted == false) {
-				myRenderer->_ball->setRandomVelocity();
+			if (mySceneManager->_threadSafeTimer.isCompleted() == true && _gameStarted == false) {
+				mySceneManager->myRenderer->_ball->setRandomVelocity();
 				_gameStarted = true;
 			}
 
-			myRenderer->_leftPlatform->move();
-			myRenderer->_rightPlatform->move();
+			mySceneManager->myRenderer->_leftPlatform->move();
+			mySceneManager->myRenderer->_rightPlatform->move();
 			checkAndReactToPlatformCollisions();
-			myRenderer->_ball->move();
+			mySceneManager->myRenderer->_ball->move();
 			checkAndReactToBallCollisions(winner);
 
 			if (winner != -1) {
@@ -290,42 +292,42 @@ void Game::render() {
 	int w = 0;
 	int h = 0;
 
-	SDL_RenderClear(myRenderer->_renderer);
+	SDL_RenderClear(mySceneManager->myRenderer->_renderer);
 
 	if (_state == GameState::kMainMenu) {
 		
-		_controlsTexture = myRenderer->myTextureManager->loadTexture("W/S", white, myRenderer->myTextureManager->_fonts[1], myRenderer->_renderer);
-		myRenderer->renderThis(_controlsTexture, 20, 20);
+		mySceneManager->_controlsTexture = mySceneManager->myRenderer->myTextureManager->loadTexture("W/S", white, mySceneManager->myRenderer->myTextureManager->_fonts[1], mySceneManager->myRenderer->_renderer);
+		mySceneManager->myRenderer->renderThis(mySceneManager->_controlsTexture, 20, 20);
 
-		_controlsTexture = myRenderer->myTextureManager->loadTexture("UP/DOWN", white, myRenderer->myTextureManager->_fonts[1], myRenderer->_renderer);
+		mySceneManager->_controlsTexture = mySceneManager->myRenderer->myTextureManager->loadTexture("UP/DOWN", white, mySceneManager->myRenderer->myTextureManager->_fonts[1], mySceneManager->myRenderer->_renderer);
 		w = 0;
-		SDL_QueryTexture(_controlsTexture, NULL, NULL, &w, NULL);
-		myRenderer->renderThis(_controlsTexture, 580-w, 20);
+		SDL_QueryTexture(mySceneManager->_controlsTexture, NULL, NULL, &w, NULL);
+		mySceneManager->myRenderer->renderThis(mySceneManager->_controlsTexture, 580-w, 20);
 
-		_countdownTimer = myRenderer->myTextureManager->loadTexture("Press SPACE to Start", white, myRenderer->myTextureManager->_fonts[0], myRenderer->_renderer);
-		SDL_QueryTexture(_countdownTimer, NULL, NULL, &w, NULL);
-		myRenderer->renderThis(_countdownTimer, myRenderer->GAME_WIDTH / 2 - (w / 2), 350);
+		mySceneManager->_countdownTimer = mySceneManager->myRenderer->myTextureManager->loadTexture("Press SPACE to Start", white, mySceneManager->myRenderer->myTextureManager->_fonts[0], mySceneManager->myRenderer->_renderer);
+		SDL_QueryTexture(mySceneManager->_countdownTimer, NULL, NULL, &w, NULL);
+		mySceneManager->myRenderer->renderThis(mySceneManager->_countdownTimer, mySceneManager->myRenderer->GAME_WIDTH / 2 - (w / 2), 350);
 
 		//updateScoreTextTure();
 	}
 	else if (_state == GameState::kScoreScreen) {
 		//updateScoreTextTure();
-		_countdownTimer = myRenderer->myTextureManager->loadTexture("Press SPACE to re-match", white, myRenderer->myTextureManager->_fonts[1], myRenderer->_renderer);
-		SDL_QueryTexture(_countdownTimer, NULL, NULL, &w, NULL);
-		myRenderer->renderThis(_countdownTimer, myRenderer->GAME_WIDTH / 2 - (w / 2), 350);
+		mySceneManager->_countdownTimer = mySceneManager->myRenderer->myTextureManager->loadTexture("Press SPACE to re-match", white, mySceneManager->myRenderer->myTextureManager->_fonts[1], mySceneManager->myRenderer->_renderer);
+		SDL_QueryTexture(mySceneManager->_countdownTimer, NULL, NULL, &w, NULL);
+		mySceneManager->myRenderer->renderThis(mySceneManager->_countdownTimer, mySceneManager->myRenderer->GAME_WIDTH / 2 - (w / 2), 350);
 	}
 
 	//_leftPlatform->render(_renderer);
 	//_rightPlatform->render(_renderer);
 	//_ball->render(_renderer);
-	myRenderer->render();
+	mySceneManager->myRenderer->render();
 
 	// Render scores
-	SDL_QueryTexture(_scoresTexture, NULL, NULL, &w, NULL);
-	myRenderer->renderThis(_scoresTexture, myRenderer->GAME_WIDTH/2 - (w/2), 20);
+	SDL_QueryTexture(mySceneManager->_scoresTexture, NULL, NULL, &w, NULL);
+	mySceneManager->myRenderer->renderThis(mySceneManager->_scoresTexture, mySceneManager->myRenderer->GAME_WIDTH/2 - (w/2), 20);
 
-	SDL_SetRenderDrawColor(myRenderer->_renderer, 0x30, 0x30, 0x30, 0xFF);
-	SDL_RenderPresent(myRenderer->_renderer);
+	SDL_SetRenderDrawColor(mySceneManager->myRenderer->_renderer, 0x30, 0x30, 0x30, 0xFF);
+	SDL_RenderPresent(mySceneManager->myRenderer->_renderer);
 	_frames++;
 
 	// Delay to keep FPS consistent

@@ -11,6 +11,7 @@
 #include "Timer.h"
 
 #include "Renderer.h"
+#include "SceneManager.h"
 
 enum class GameState {
 	kMainMenu,
@@ -30,18 +31,19 @@ private:
 	int _frames;
 	uint32_t _timeAtLaunch;
 
-	Timer _threadSafeTimer;
+	/*Timer _threadSafeTimer;*/
 
 	std::vector<int> _scoresVector;
 
 	GameState _state;
 	bool _gameStarted;
 
-	std::unique_ptr<Renderer> myRenderer; //todo change name
+	//std::unique_ptr<Renderer> myRenderer; //todo change name
+	std::unique_ptr<SceneManager> mySceneManager;
 
-	SDL_Texture* _countdownTimer;
+	/*SDL_Texture* _countdownTimer;
 	SDL_Texture* _scoresTexture;
-	SDL_Texture* _controlsTexture;
+	SDL_Texture* _controlsTexture;*/
 
 	void checkAndReactToBallCollisions(int& winner);
 	void checkAndReactToPlatformCollisions();
