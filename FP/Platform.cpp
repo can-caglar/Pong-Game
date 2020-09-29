@@ -1,6 +1,8 @@
 #include "Platform.h"
 
-Platform::Platform(const int& x, const int& y, const int& w, const int& h) {
+Platform::Platform(SDL_Texture* texture, const int& x, const int& y) {
+
+	_texture = texture;
 
 	_velocity.x = 0;
 	_velocity.y = 0;
@@ -10,11 +12,14 @@ Platform::Platform(const int& x, const int& y, const int& w, const int& h) {
 	_curX = x;
 	_curY = y;
 
-	//_boundingBox = SDL_Rect();
+	int width = 0;
+	int height = 0;
+	SDL_QueryTexture(texture, nullptr, nullptr, &width, &height);
+	
 	_boundingBox.x = x;
 	_boundingBox.y = y;
-	_boundingBox.w = w;
-	_boundingBox.h = h;
+	_boundingBox.w = width;
+	_boundingBox.h = height;
 }
 
 

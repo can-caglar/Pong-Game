@@ -19,20 +19,26 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AssetManager.cpp" />
     <ClCompile Include="Ball.cpp" />
     <ClCompile Include="CollisionDetection.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameObjects.cpp" />
+    <ClCompile Include="Label.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Platform.cpp" />
+    <ClCompile Include="TextureManager.cpp" />
     <ClCompile Include="Timer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AssetManager.h" />
     <ClInclude Include="Ball.h" />
     <ClInclude Include="CollisionDetection.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameObjects.h" />
+    <ClInclude Include="Label.h" />
     <ClInclude Include="Platform.h" />
+    <ClInclude Include="TextureManager.h" />
     <ClInclude Include="Timer.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

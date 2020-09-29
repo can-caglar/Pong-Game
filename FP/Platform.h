@@ -4,7 +4,7 @@
 class Platform : public GameObjects<SDL_Rect> {
 public:
 	Platform() = default;
-	Platform(const int& x, const int& y, const int& w, const int& h);
+	Platform(SDL_Texture* texture,  const int& x, const int& y);
 
 	// Functions
 	void moveUp();

@@ -5,7 +5,7 @@ class Ball : public GameObjects<Circle> {
 
 public:
 	Ball() = default;
-	Ball(const int& x, const int& y, const int& r);
+	Ball(SDL_Texture* texture, const int& x, const int& y);
 
 	// Functions
 	void setRandomVelocity();

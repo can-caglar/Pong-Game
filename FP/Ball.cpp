@@ -1,19 +1,27 @@
 #include "Ball.h"
 #include <iostream>
 
-Ball::Ball(const int& x, const int& y, const int& r) {
+Ball::Ball(SDL_Texture* texture, const int& x, const int& y) {
+
+	int width;
+	int height;
+	int r;
 
 	setSpeed(8);
 
-	//setRandomVelocity();
-
+	_texture = texture;
 	_curX = x;
 	_curY = y;
 
+	width = 0;
+	height = 0;
+	r = 0;
+	SDL_QueryTexture(texture, nullptr, nullptr, &width, &height);
+	r = std::max(width, height);
+
 	_boundingBox.r = r;
 
-	// Account for the fact that textures are drawn at top left, 
-	// but circle x,y is in centre of circle.
+	//Textures are drawn at top left, but bounding box is drawn from center.
 	_boundingBox.x = x + r;
 	_boundingBox.y = y + r;
 
@@ -39,7 +47,7 @@ void Ball::setRandomVelocity() {
 void Ball::render(SDL_Renderer* renderer) {
 	SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0XFF, 0XFF);
 
-	SDL_Rect newPos = { _curX, _curY, 15, 15 };
+	SDL_Rect newPos = { _curX, _curY, _boundingBox.r*2, _boundingBox.r*2 };
 	SDL_RenderCopy(renderer, _texture, NULL, &newPos);
 
 	//SDL_RenderPresent(renderer);

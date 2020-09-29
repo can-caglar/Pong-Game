@@ -1,5 +1,5 @@
 /*
-Game written by Can Caglar 14th Sept 2020.
+Game written by Can Caglar (Jhan Charler) 14th Sept 2020.
 */
 
 #include "Game.h"

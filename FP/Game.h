@@ -9,6 +9,8 @@
 
 #include "Ball.h"
 #include "Platform.h"
+#include "AssetManager.h"
+#include "Label.h"
 
 class Timer;
 
@@ -25,6 +27,8 @@ public:
 	Game();
 	int execute(); // Launch game
 
+	static SDL_Renderer* _renderer;
+
 private:
 	bool _running;
 	int _frames;
@@ -38,31 +42,27 @@ private:
 	bool _gameStarted;
 
 	SDL_Window* _mainWindow;
-	SDL_Renderer* _renderer;
-
-	const int GAME_WIDTH = 600;
-	const int GAME_HEIGHT = 400;
+	
+	int _game_width;
+	int _game_height;
 
 	std::unique_ptr<Ball> _ball;
 	std::unique_ptr<Platform> _leftPlatform;
 	std::unique_ptr<Platform> _rightPlatform;
 
-	std::vector<TTF_Font*> _fonts;		// global font
-	void renderText(SDL_Texture* text_texture, int xpos, int ypos);
-	void updateScoreTextTure();
+	std::unique_ptr<Label>  _scoreLabel;
+	std::unique_ptr<Label> _countdownTimer;
+	std::unique_ptr<Label> _controlsLabel;
 
-	SDL_Texture* _countdownTimer;
-	SDL_Texture* _scoresTexture;
-	SDL_Texture* _controlsTexture;
+	AssetManager _assets;
 
-	SDL_Texture* loadTexture(std::string path);
 	bool loadMedia();
-	SDL_Texture* loadFromRenderedText(std::string textureTex, SDL_Color textColor, TTF_Font* font);
+
 
 	void checkAndReactToBallCollisions(int& winner);
 	void checkAndReactToPlatformCollisions();
 
-	bool init();
+	bool init(std::string windowName, int x, int y, int width, int height, bool fullscreen);
 	void onEvents(SDL_Event* event);
 	void gameLoop();
 	void render();

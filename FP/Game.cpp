@@ -5,19 +5,20 @@
 
 #include "Game.h"
 #include "CollisionDetection.h"
+#include "TextureManager.h"
 
 using std::cout;
 using std::endl;
+
+void print_FPS(uint32_t time_since_start, int frames);
+
+SDL_Renderer* Game::_renderer = nullptr;
 
 Game::Game() {
 	cout << "Game object initialized." << endl;
 
 	_state = GameState::kMainMenu;
 	_scoresVector = { 0, 0 };
-
-	_ball = std::make_unique<Ball>(GAME_WIDTH / 2, GAME_HEIGHT / 2, 8);
-	_leftPlatform = std::make_unique<Platform>(7, 150, 13, 73);
-	_rightPlatform = std::make_unique<Platform>(580, 150, 13, 73);
 
 	_running = true;
 	_gameStarted = false;
@@ -27,24 +28,43 @@ Game::Game() {
 int Game::execute() {
 	cout << "Launching game." << endl;
 
-	init();
+	init("Pong by Jhan", SDL_WINDOWPOS_CENTERED, 
+		SDL_WINDOWPOS_CENTERED, 
+		600, 400, false);
 
 	SDL_Event e;
 	cout << "Starting game..." << endl;
 	while (_running) {
+
+		int t1 = SDL_GetTicks();
+
 		while (SDL_PollEvent(&e)) {
 			onEvents(&e);
 		}
 		gameLoop();
 		render();
+
+		// Delay to keep FPS consistent
+		int t2 = SDL_GetTicks() - t1;
+		int ticks_per_frame = 1000 / 60;
+		if (t2 < ticks_per_frame) SDL_Delay(ticks_per_frame - t2);
+		print_FPS(_timeAtLaunch, _frames);	
 	}
 
 	cleanUp();
 	return 0;
+
+	
 }
 
-bool Game::init() {
+bool Game::init(std::string windowName, int xpos, int ypos, int width, int height, bool fullscreen) {
 	cout << "Initializing game." << "\n" << std::flush;
+
+	int flag = 0;
+	_game_width = width;
+	_game_height = height;
+
+	if (fullscreen) flag  = SDL_WINDOW_FULLSCREEN;
 
 	// Init SDL
 	if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
@@ -53,8 +73,8 @@ bool Game::init() {
 	}
 
 	// Create Window
-	if ((_mainWindow = SDL_CreateWindow("Pong by Can", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-		GAME_WIDTH, GAME_HEIGHT, SDL_WINDOW_SHOWN)) == NULL) {
+	if ((_mainWindow = SDL_CreateWindow(windowName.c_str(), xpos, ypos,
+		width, height, flag)) == NULL) {
 		return false;
 	}
 
@@ -90,62 +110,28 @@ bool Game::init() {
 
 //	Load textures from image and text
 bool Game::loadMedia() {
+
+	_assets.addTexture("ball", "Resources/ball.png");
+	_assets.addTexture("leftPlatform", "Resources/plank.bmp");
+	_assets.addTexture("rightPlatform", "Resources/plank2.bmp");
 	
-	_ball->setTexture(loadTexture("Resources/ball.png"));
-	_leftPlatform->setTexture(loadTexture("Resources/plank.bmp"));
-	_rightPlatform->setTexture(loadTexture("Resources/plank2.bmp"));
+	_ball = std::make_unique<Ball>(_assets.getTexture("ball"), _game_width / 2, _game_height / 2);
+	_leftPlatform = std::make_unique<Platform>(_assets.getTexture("leftPlatform"), 7, 150);
+	_rightPlatform = std::make_unique<Platform>(_assets.getTexture("rightPlatform"), _game_width-20, 150);
 
-	_fonts.push_back(TTF_OpenFont("Resources/ARLRDBD.TTF", 28));
-	if (_fonts[0] == NULL) {
-		std::cout << "Failed to load 28 ARIAL ROUNDED font. SDL_ttf error: " << TTF_GetError() << "\n";
-		return false;
-	}
+	_assets.addFont("arl28", "Resources/ARLRDBD.TTF", 28);
+	_assets.addFont("arl14", "Resources/ARLRDBD.TTF", 14);
 
-	_fonts.push_back(TTF_OpenFont("Resources/ARLRDBD.TTF", 14));
-	if (_fonts[1] == NULL) {
-		std::cout << "Failed to load 14 ARIAL ROUNDED font. SDL_ttf error: " << TTF_GetError() << "\n";
-		return false;
-	}
+	SDL_Color white = { 255,255,255 };
+	
+	_scoreLabel = std::make_unique<Label>("Scoreboard", "Resources/ARLRDBD.TTF" , 200, 200, 28, white);
+	_countdownTimer = std::make_unique<Label>("Countdown", "Resources/ARLRDBD.TTF",  200, 200, 28, white);
+	_controlsLabel = std::make_unique<Label>("Controls", "Resources/ARLRDBD.TTF", 200, 200, 14, white);
+
 
 	return true;
 }
 
-SDL_Texture* Game::loadFromRenderedText(std::string textureText, SDL_Color textColor, TTF_Font* font) {
-
-	SDL_Texture* newTexture = NULL;
-
-	SDL_Surface* textSurface = TTF_RenderText_Blended(font, textureText.c_str(), textColor);
-	if (textSurface == NULL) {
-		std::cout << "Unable to render text surface. SDL_ttf error: " << TTF_GetError() << "\n";
-	}
-	else {
-		newTexture = SDL_CreateTextureFromSurface(_renderer, textSurface);
-		if (newTexture == NULL) {
-			std::cout << "Unable to create texture from rendered text. SDL_ttf error: " << TTF_GetError() << "\n";
-		}
-		else {
-		}
-		SDL_FreeSurface(textSurface);
-	}
-	return newTexture;
-}
-
-SDL_Texture* Game::loadTexture(std::string path) {
-	SDL_Texture* newTexture = NULL;
-
-	SDL_Surface* loadedSurface = IMG_Load(path.c_str());
-	if (loadedSurface == NULL) {
-		std::cout << "Unable to load image " << path << ". SDL_image error: " << IMG_GetError() << "\n";
-	}
-	else {
-		newTexture = SDL_CreateTextureFromSurface(_renderer, loadedSurface);
-		if (newTexture == NULL) {
-			std::cout << "Unable to create texture from " << path << ". SDL Error: " << SDL_GetError() << "\n";
-		}
-		SDL_FreeSurface(loadedSurface);
-	}
-	return newTexture;
-}
 
 void Game::onEvents(SDL_Event* event) {
 	if (event->type == SDL_QUIT) {
@@ -251,8 +237,8 @@ void Game::checkAndReactToPlatformCollisions() {
 		_leftPlatform->curY(0);
 		_leftPlatform->stop();
 	}
-	if ((_leftPlatform->curY() + _leftPlatform->boundingBox().h) > (GAME_HEIGHT)) {
-		_leftPlatform->curY(GAME_HEIGHT - _leftPlatform->boundingBox().h);
+	if ((_leftPlatform->curY() + _leftPlatform->boundingBox().h) > (_game_height)) {
+		_leftPlatform->curY(_game_height - _leftPlatform->boundingBox().h);
 		_leftPlatform->stop();
 	}
 
@@ -261,8 +247,8 @@ void Game::checkAndReactToPlatformCollisions() {
 		_rightPlatform->curY(0);
 		_rightPlatform->stop();
 	}
-	if ((_rightPlatform->curY() + _rightPlatform->boundingBox().h) > (GAME_HEIGHT)) {
-		_rightPlatform->curY(GAME_HEIGHT - _rightPlatform->boundingBox().h);
+	if ((_rightPlatform->curY() + _rightPlatform->boundingBox().h) > (_game_height)) {
+		_rightPlatform->curY(_game_height - _rightPlatform->boundingBox().h);
 		_rightPlatform->stop();
 	}
 
@@ -284,7 +270,7 @@ void Game::checkAndReactToBallCollisions(int& winner) {
 		winner = 1;
 	}
 	//RIGHT
-	else if (_ball->curX() > GAME_WIDTH - ballDiameter) { // PLAYER 1 WINS
+	else if (_ball->curX() > _game_width - ballDiameter) { // PLAYER 1 WINS
 		/*_scoresVector[0]++;
 		_ball->setVelocity({ 0, 0 });
 		_state = GameState::kScoreScreen;
@@ -300,13 +286,13 @@ void Game::checkAndReactToBallCollisions(int& winner) {
 		_ball->curY(0);
 	}
 	//BOTTOM
-	else if (_ball->curY() > GAME_HEIGHT - ballDiameter) {
+	else if (_ball->curY() > _game_height - ballDiameter) {
 
 		int yVel = _ball->velocity().y;
 		int xVel = _ball->velocity().x;
 
 		_ball->setVelocity({ xVel, -yVel });
-		_ball->curY(GAME_HEIGHT - ballDiameter);
+		_ball->curY(_game_height - ballDiameter);
 	}
 
 	// Ball collision on platforms
@@ -331,6 +317,8 @@ void Game::gameLoop() {
 	{
 		case GameState::kMainMenu:{
 			_scoresVector = { 0, 0 };
+			_ball->curX(_game_width / 2);
+			_ball->curY(_game_height / 2);
 			_leftPlatform->move();
 			_rightPlatform->move();
 			checkAndReactToPlatformCollisions();
@@ -339,8 +327,8 @@ void Game::gameLoop() {
 		case GameState::kPreStart:{
 			_gameStarted = false;
 			_ball->setVelocity({ 0,0 });
-			_ball->curX(GAME_WIDTH / 2);
-			_ball->curY(GAME_HEIGHT / 2);
+			_ball->curX(_game_width / 2);
+			_ball->curY(_game_height / 2);
 			_threadSafeTimer.start(std::chrono::milliseconds(1500));
 			_state = GameState::kStart;
 
@@ -369,33 +357,6 @@ void Game::gameLoop() {
 	}
 }
 
-void Game::updateScoreTextTure() {
-	
-	std::ostringstream oss;
-	oss << "Score: " << std::setw(5) << std::right  << _scoresVector[0] << " - " << _scoresVector[1];
-	SDL_Color white = { 255,255,255 };
-
-	if (_scoresTexture != NULL) SDL_DestroyTexture(_scoresTexture);
-	_scoresTexture = loadFromRenderedText(oss.str().c_str(), white, _fonts[0]);
-
-	if (_scoresTexture == NULL) {
-		std::cout << "Failed to change _scoresTexture texture \n";
-	}
-}
-
-
-void Game::renderText(SDL_Texture* tt, int xpos, int ypos) {
-	
-	if (tt == NULL) return;
-
-	int w=140;
-	int h=40;
-
-	SDL_QueryTexture(tt, NULL, NULL, &w, &h);
-
-	SDL_Rect newPos = { xpos, ypos , w, h };
-	SDL_RenderCopy(_renderer, tt, NULL, &newPos);
-}
 
 void print_FPS(uint32_t time_since_start, int frames) {
 	int t = SDL_GetTicks();
@@ -403,9 +364,14 @@ void print_FPS(uint32_t time_since_start, int frames) {
 	std::cout << "Avg FPS: " << std::setprecision(2) << fps << "\n";
 }
 
+std::string getScoreString(std::vector<int> scores) {
+	std::ostringstream oss;
+	oss << "Score: " << std::setw(5) << std::right << scores[0] << " - " << scores[1];
+	return oss.str();
+}
+
 void Game::render() {
 	SDL_Color white = { 255,255,255 };
-	int t1 = SDL_GetTicks();
 	int w = 0;
 	int h = 0;
 
@@ -413,25 +379,25 @@ void Game::render() {
 
 	if (_state == GameState::kMainMenu) {
 		
-		_controlsTexture = loadFromRenderedText("W/S", white, _fonts[1]);
-		renderText(_controlsTexture, 20, 20);
 
-		_controlsTexture = loadFromRenderedText("UP/DOWN", white, _fonts[1]);
-		w = 0;
-		SDL_QueryTexture(_controlsTexture, NULL, NULL, &w, NULL);
-		renderText(_controlsTexture, 580-w, 20);
+		_controlsLabel->changeText("W/S");
+		_controlsLabel->show(20, 20);
+		 
+		_controlsLabel->changeText("UP/DOWN");
+		_controlsLabel->show(_game_width - 20 - _controlsLabel->getRect().w, 20);
 
-		_countdownTimer = loadFromRenderedText("Press SPACE to Start", white, _fonts[0]);
-		SDL_QueryTexture(_countdownTimer, NULL, NULL, &w, NULL);
-		renderText(_countdownTimer, GAME_WIDTH / 2 - (w / 2), 350);
+		_countdownTimer->changeText("Press SPACE to Start");
+		_countdownTimer->show(_game_width / 2 - (_countdownTimer->getRect().w / 2), 350);
 
-		updateScoreTextTure();
+		SDL_Color white = { 255,255,255 };
+
+		_scoreLabel->changeText(getScoreString(_scoresVector));
+		_scoreLabel->show();
+
 	}
 	else if (_state == GameState::kScoreScreen) {
-		updateScoreTextTure();
-		_countdownTimer = loadFromRenderedText("Press SPACE to re-match", white, _fonts[1]);
-		SDL_QueryTexture(_countdownTimer, NULL, NULL, &w, NULL);
-		renderText(_countdownTimer, GAME_WIDTH / 2 - (w / 2), 350);
+		_countdownTimer->changeText("Press SPACE to re-match");
+		_countdownTimer->show();
 	}
 
 	_leftPlatform->render(_renderer);
@@ -439,27 +405,22 @@ void Game::render() {
 	_ball->render(_renderer);
 
 	// Render scores
-	SDL_QueryTexture(_scoresTexture, NULL, NULL, &w, NULL);
-	renderText(_scoresTexture, GAME_WIDTH/2 - (w/2), 20);
+	_scoreLabel->changeText(getScoreString(_scoresVector));
+	_scoreLabel->show(_game_width / 2 - (_scoreLabel->getRect().w / 2), 20);
 
 	SDL_SetRenderDrawColor(_renderer, 0x30, 0x30, 0x30, 0xFF);
 	SDL_RenderPresent(_renderer);
 	_frames++;
-
-	// Delay to keep FPS consistent
-	int t2 = SDL_GetTicks() - t1;
-	int ticks_per_frame = 1000 / 60;
-	if (t2 < ticks_per_frame) SDL_Delay(ticks_per_frame - t2);
-	print_FPS(_timeAtLaunch, _frames);
+	
 }
 
 void Game::cleanUp() {
 	cout << "End. Cleaning up..." << endl;
 
-	for (auto f : _fonts) {
+	/*for (auto f : _fonts) {
 		TTF_CloseFont(f);
 		f = NULL;
-	}
+	}*/
 
 	SDL_DestroyRenderer(_renderer);
 	SDL_DestroyWindow(_mainWindow);
