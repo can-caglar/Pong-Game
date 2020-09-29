@@ -35,7 +35,9 @@ void Label::setText() {
 		SDL_FreeSurface(textSurface);
 	}
 	
-	if (_texture != nullptr) SDL_DestroyTexture(_texture);
+	if (_texture != nullptr) {
+		SDL_DestroyTexture(_texture);
+	}
 
 	_texture = newTexture;
 
